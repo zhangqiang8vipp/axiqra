@@ -17,7 +17,6 @@
 | `.github/coderabbit.yaml` | CodeRabbit 配置文件 |
 | `.github/copilot-instructions.md` | Copilot 项目审查规范 |
 | `.github/scripts/codex-review.mjs` | Codex 审查脚本 |
-| `.github/workflows/axiqra-quality-gates-sample.yml` | 升级版质量门控（含测试+安全扫描）|
 | `.github/REVIEW-BOTS-SETUP.md` | 配置指南文档 |
 
 ## Test plan
