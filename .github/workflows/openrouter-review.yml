@@ -76,7 +76,6 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
-          REVIEW_BODY: ${{ steps.review.outputs.review_body }}
         run: |
           if [ -z "$OPENROUTER_API_KEY" ]; then
             echo "::warning::OPENROUTER_API_KEY secret not set. Skipping OpenRouter review."
