@@ -1,4 +1,4 @@
-name: Gemini Code Review
+name: OpenRouter AI Review
 
 on:
   pull_request:
@@ -8,6 +8,7 @@ on:
       - "docs/**"
       - "axiqra-project/**"
       - "tests/**"
+      - ".github/workflows/openrouter-review.yml"
       - ".github/workflows/gemini-review.yml"
       - ".github/workflows/axiqra-quality-gates-sample.yml"
       - ".github/scripts/**"
@@ -28,8 +29,8 @@ on:
         type: string
 
 jobs:
-  gemini-review:
-    name: Gemini AI Code Review
+  openrouter-review:
+    name: OpenRouter AI Code Review
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -64,49 +65,55 @@ jobs:
             echo "diff_size=$(wc -l < pr_changes.diff)" >> $GITHUB_OUTPUT
           fi
 
-      - name: Gemini Code Review
+      - name: OpenRouter Code Review
         id: review
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
-          REPO: ${{ github.repository }}
         run: |
-          if [ -z "$GEMINI_API_KEY" ]; then
-            echo "::warning::GEMINI_API_KEY secret not set. Skipping Gemini review."
+          if [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::warning::OPENROUTER_API_KEY secret not set. Skipping OpenRouter review."
             exit 0
           fi
 
-          # 构建审查上下文
           PR_INFO="PR #$PR_NUMBER - ${{ steps.pr_info.outputs.title }}"
           AUTHOR="${{ steps.pr_info.outputs.author }}"
           BASE="${{ steps.pr_info.outputs.base }}"
           DIFF_SIZE="${{ steps.diff.outputs.diff_size }}"
 
-          # 构建 prompt 文本（使用 jq --arg 安全转义）
-          PROMPT=$(jq -n \
-            --arg pr_info "$PR_INFO" \
-            --arg author "$AUTHOR" \
-            --arg base "$BASE" \
-            --arg diff_size "$DIFF_SIZE" \
-            'You are an expert code reviewer for the Axiqra project (a knowledge engineering and memory system). Review the following PR changes.\n\nPR: \($pr_info)\nAuthor: \($author)\nBase branch: \($base)\n\nReview focus areas:\n1. Security: hardcoded secrets, API key leaks, injection risks\n2. MCP protocol compliance: quota limits, error handling\n3. Error handling: async try/catch, proper HTTP status codes\n4. Test coverage: new code has corresponding tests\n5. Code quality: ESM imports, naming, error context\n\nProvide your review in this format:\n## Summary\n[One paragraph overview]\n\n## Critical Issues (must fix)\n- [file:line] - issue description\n\n## Suggestions (recommended)\n- [file:line] - suggestion description\n\n## Positive Highlights\n- What was done well\n\nDiff size: \($diff_size) lines\nOutput format: Markdown')
+          # Read diff content (truncated for model context window)
+          DIFF_CONTENT=$(head -c 120000 pr_changes.diff 2>/dev/null || cat pr_changes.diff)
 
-          # 构建 JSON payload（使用 jq --arg 安全注入 prompt）
-          PAYLOAD=$(jq -n \
-            --arg prompt "$PROMPT" \
-            '{contents: [{parts: [{text: $prompt}]}]}')
-
-          # 调用 Gemini API 进行代码审查
           RESPONSE=$(curl -s -X POST \
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY" \
+            "https://openrouter.ai/api/v1/chat/completions" \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
             -H "Content-Type: application/json" \
-            -d "$PAYLOAD")
+            -H "HTTP-Referer: https://github.com/zhangqiang8vipp/axiqra" \
+            -H "X-Title: Axiqra Code Review" \
+            -d "{
+              \"model\": \"openrouter/free\",
+              \"max_tokens\": 2048,
+              \"messages\": [
+                {
+                  \"role\": \"system\",
+                  \"content\": \"You are an expert code reviewer for the Axiqra project (a knowledge engineering and memory system). Provide concise, actionable feedback.\"
+                },
+                {
+                  \"role\": \"user\",
+                  \"content\": \"Review the following PR changes.\n\nPR: $PR_INFO\nAuthor: $AUTHOR\nBase branch: $BASE\nDiff size: $DIFF_SIZE lines\n\n## Review Focus\n1. Security: hardcoded secrets, API key leaks, injection risks\n2. MCP protocol compliance: quota limits, error handling\n3. Error handling: async try/catch, proper HTTP status codes\n4. Test coverage: new code has corresponding tests\n5. Code quality: ESM imports, naming, error context\n6. Workflow changes: trigger paths, permissions, secrets usage\n\n## Output Format\n## Summary\n[One paragraph overview]\n\n## Critical Issues (must fix)\n- [file:line] - issue description\n\n## Suggestions (recommended)\n- [file:line] - suggestion description\n\n## Positive Highlights\n- What was done well\n\n---\n\`\`\`diff\n$DIFF_CONTENT\n\`\`\`"
+                }
+              ]
+            }")
 
-          REVIEW=$(echo $RESPONSE | jq -r '.candidates[0].content.parts[0].text // empty')
+          REVIEW=$(echo $RESPONSE | jq -r '.choices[0].message.content // empty')
 
           if [ -n "$REVIEW" ]; then
             echo "review_body<<EOF" >> $GITHUB_OUTPUT
             echo "$REVIEW" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
+          else
+            ERROR_MSG=$(echo $RESPONSE | jq -r '.error.message // "unknown error"')
+            echo "::warning::OpenRouter API error: $ERROR_MSG"
           fi
 
       - name: Post review comment
@@ -123,6 +130,6 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
-                body: `## Gemini AI Code Review 🤖\n\n${reviewBody}\n\n---\n*Reviewed by Gemini AI*`
+                body: `## OpenRouter AI Code Review 🤖\n\n${reviewBody}\n\n---\n*Reviewed by OpenRouter (openrouter/free model)*`
               });
             }
