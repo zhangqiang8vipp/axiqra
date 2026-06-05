@@ -12,9 +12,9 @@ It is designed to help AI coding tools such as Codex, Cursor, Claude Code, Gemin
 
 The goal is simple:
 
-`	ext
+```
 Do not make AI coding agents reason from zero when a real engineering path has already been verified.
-`
+```
 
 ## Why This Matters
 
@@ -46,7 +46,7 @@ See [Open-Source Scope](OPEN_SOURCE_SCOPE.md) for the exact scope.
 
 ## Repository Structure
 
-\\\	ext
+```
 axiqra-project/
   .github/          GitHub workflows and automation scripts
   axiqra-website/   public landing page and waitlist API
@@ -54,7 +54,7 @@ axiqra-project/
 logo/               Axiqra logo assets
 docs/               English documentation
 i18n/               Chinese documentation
-\\\
+```
 
 ## Current Status
 
@@ -86,29 +86,29 @@ This can support OSS workflows such as issue triage, PR review, release notes, m
 
 ### Website (local development)
 
-\\\ash
+```bash
 cd axiqra-project/axiqra-website
 docker compose up -d
 # http://127.0.0.1:8080
-\\\
+```
 
 ### Infrastructure (local middleware)
 
-\\\ash
+```bash
 cd axiqra-project/axiqra-infra
 cp .env.example .env   # fill in secrets
 docker compose up -d
-\\\
+```
 
 ### Make targets
 
-\\\ash
+```bash
 make website-up       # start website
-make website-down    # stop website
-make infra-up        # start infra
-make infra-down      # stop infra
-make infra-health    # health check
-\\\
+make website-down     # stop website
+make infra-up         # start infra
+make infra-down       # stop infra
+make infra-health     # health check
+```
 
 ## Contributing
 

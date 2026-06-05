@@ -2,7 +2,7 @@
  * Generate Copilot Code Review body
  * Used by copilot-review workflow
  */
-module.exports = function generateReviewBody(mcpChanges, testChanges, securityRisks, apiChanges, filesList, diffSize, context) {
+export default function generateReviewBody(mcpChanges, testChanges, securityRisks, apiChanges, filesList, diffSize, context) {
   const prNumber = context.payload.pull_request?.number;
 
   return `
