@@ -2,9 +2,9 @@ version: "3.9"
 
 # ============================================================
 # Axiqra S1 MVP 全量中间件编排
-# 启动命令：cd axq-infra && docker compose up -d
-# 查看日志：cd axq-infra && docker compose logs -f
-# 停止：cd axq-infra && docker compose down
+# 启动命令：cd axiqra-infra && docker compose up -d
+# 查看日志：cd axiqra-infra && docker compose logs -f
+# 停止：cd axiqra-infra && docker compose down
 # ============================================================
 
 services:
@@ -99,7 +99,7 @@ services:
   # -------------------- 后端 API 服务 --------------------
   axiqra_core:
     build:
-      context: ../axq-code
+      context: ../axiqra-code
       dockerfile: axiom-start/Dockerfile
     container_name: axiqra_core
     environment:
@@ -136,11 +136,11 @@ services:
     restart: unless-stopped
 
   # -------------------- 前端 Web 服务 --------------------
-  # 前端（官网）由 axq/axq-website/docker-compose.yml 提供
-  # axq-infra 仅负责后端基础设施（数据库、缓存、对象存储）
+  # 前端（官网）由 axiqra-project/axiqra-website/docker-compose.yml 提供
+  # axiqra-infra 仅负责后端基础设施（数据库、缓存、对象存储）
   # axiqra_frontend:
   #   build:
-  #     context: ../axq-frontend
+  #     context: ../axiqra-frontend
   #     dockerfile: Dockerfile
   #   container_name: axiqra_frontend
   #   ports:

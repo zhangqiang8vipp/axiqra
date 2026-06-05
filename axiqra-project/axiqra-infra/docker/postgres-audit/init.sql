@@ -1,4 +1,4 @@
--- axiom-project/axiom-infra/docker/postgres-audit/init.sql
+-- axiqra-project/axiqra-infra/docker/postgres-audit/init.sql
 -- PostgreSQL 审计库建表脚本（append-only）
 -- 独立部署，仅存储 append-only 审计日志
 

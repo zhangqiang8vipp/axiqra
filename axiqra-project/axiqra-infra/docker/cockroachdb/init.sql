@@ -1,4 +1,4 @@
--- axiom-project/axiom-infra/docker/cockroachdb/init.sql
+-- axiqra-project/axiqra-infra/docker/cockroachdb/init.sql
 -- Axiqra 业务库建表脚本（S1 单机模式 CockroachDB）
 -- 必须包含三字段：id、gmt_create、gmt_modified
 

@@ -1,4 +1,4 @@
-# axiom-project/axiom-infra/docker/minio/sse-config.json
+# axiqra-project/axiqra-infra/docker/minio/sse-config.json
 # MinIO SSE-S3 服务端加密配置（每个对象独立密钥）
 {
   "keys": [

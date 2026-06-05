@@ -1,7 +1,7 @@
 .PHONY: help up down restart logs ps health clean
 
 help:
-	@echo "axq-infra: Axiqra 中间件管理"
+	@echo "axiqra-infra: Axiqra 中间件管理"
 	@echo "  make up       启动中间件（CockroachDB/PostgreSQL/Redis/MinIO）"
 	@echo "  make down     停止中间件"
 	@echo "  make restart  重启中间件"
