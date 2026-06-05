@@ -92,7 +92,7 @@ jobs:
           USER_CONTENT="Please review PR #${PR_NUMBER}:
 Title: ${PR_TITLE}
 Author: ${PR_AUTHOR}
-Base: ${PR_BASE} → Head: ${PR_HEAD}
+Base: ${PR_BASE} -> Head: ${PR_HEAD}
 Diff (${DIFF_SIZE} bytes):
 ${DIFF_CONTENT}
 ${TRUNCATED:+[Output truncated, showing first $MAX_CHARS chars]}"
