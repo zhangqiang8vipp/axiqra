@@ -1,10 +1,12 @@
-# Axiqra
+﻿# Axiqra
 
 面向 AI 编程工具和开源维护者的 Agent-ready engineering memory。
 
 官网: https://www.axiqra.com/
 
-## 概述
+---
+
+## 项目概述
 
 Axiqra 是一个早期基础设施项目，目标是把真实工程任务沉淀为可复用、可审核、可被 AI Agent 调用的工程记忆。
 
@@ -42,16 +44,18 @@ Axiqra 目前不是一个成熟、广泛使用的传统 OSS 库。它仍处于�
 - 治理、审核、脱敏和可信来源规则
 - 面向贡献者和审核者的公开文档
 
-更完整说明见 [OPEN_SOURCE_SCOPE.md](OPEN_SOURCE_SCOPE_zh.md)。
+更完整说明见 [开源范围](OPEN_SOURCE_SCOPE_zh.md)。
 
 ## 仓库结构
 
 ```text
 axiqra-project/
   .github/          GitHub 工作流和自动化脚本
-  axiqra-website/   官网和候补名单 API
-  axiqra-infra/     本地开发中间件（CockroachDB、PostgreSQL、Redis、MinIO）
+  axiqra-website/  官网和候补名单 API
+  axiqra-infra/     本地开发中间件
 logo/               Axiqra logo 资产
+docs/               英文文档
+i18n/               中文文档
 ```
 
 ## 当前状态
@@ -80,25 +84,47 @@ Axiqra 设计上适合接入 Codex 风格的工程流程：
 
 这可以服务 issue triage、PR review、release notes、迁移、排障、新贡献者 onboarding 和仓库自动化等 OSS 场景。
 
-## 贡献
+## 快速启动
 
-欢迎贡献：
+### 官网（本地开发）
 
-- 开放 schema 和术语改进
-- MCP/API/CLI 工作流设计评审
-- 开源维护者工作流样例
-- 脱敏、安全和授权规则改进
-- 文档修订和翻译
-- 不清楚概念或缺失 OSS 场景的 issue
+```bash
+cd axiqra-project/axiqra-website
+docker compose up -d
+# http://127.0.0.1:8080
+```
 
-请先阅读 [CONTRIBUTING.md](CONTRIBUTING_zh.md)。
+### 基础设施（本地中间件）
 
-## 安全
+```bash
+cd axiqra-project/axiqra-infra
+cp .env.example .env   # 填写密钥
+docker compose up -d
+```
 
-Axiqra 处理的工程轨迹可能意外包含代码、日志、密钥、私有路径、客户名或内部基础设施信息。
+### Make 常用命令
 
-报告敏感问题前请阅读 [SECURITY.md](SECURITY_zh.md)。
+```bash
+make website-up       # 启动官网
+make website-down   # 停止官网
+make infra-up       # 启动中间件
+make infra-down     # 停止中间件
+make infra-health   # 健康检查
+```
+
+## 主要文档
+
+- [项目介绍](README_zh.md)
+- [贡献指南](CONTRIBUTING_zh.md)
+- [开源范围](OPEN_SOURCE_SCOPE_zh.md)
+- [路线图](ROADMAP_zh.md)
+- [安全政策](SECURITY_zh.md)
+- [行为准则](CODE_OF_CONDUCT_zh.md)
 
 ## 许可证
 
-本仓库采用 Apache License 2.0，见 [LICENSE](LICENSE)。
+Apache License 2.0 - 见 [LICENSE](../LICENSE)
+
+---
+
+[English](../docs/README.md) | [中文](README_zh.md)

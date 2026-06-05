@@ -20,7 +20,7 @@ Axiqra is currently best suited for contributions in these areas:
 2. Keep pull requests focused on one topic.
 3. Explain the maintainer or AI-agent workflow your change supports.
 4. Avoid including private code, logs, secrets, customer names, internal domains, or private repository paths.
-5. For documentation changes, link the relevant document in `docs/`.
+5. For documentation changes, link the relevant document.
 
 ## Public Case Rules
 
@@ -51,3 +51,7 @@ Good pull requests should include:
 - links to affected documentation
 - security or privacy considerations
 - examples when the change affects a schema, protocol, or workflow
+
+---
+
+[English](CONTRIBUTING.md) | [中文](../i18n/CONTRIBUTING_zh.md)

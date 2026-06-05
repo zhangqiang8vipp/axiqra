@@ -49,3 +49,7 @@ Axiqra's open components aim to make that knowledge structured, reviewable, reus
 Axiqra is applying under the ecosystem-importance path rather than claiming to be a widely used OSS project today.
 
 Codex can help this project by reviewing protocol design, building MCP/CLI prototypes faster, generating maintainer workflow examples, and improving redaction and security review for engineering trace writeback.
+
+---
+
+[English](OPEN_SOURCE_SCOPE.md) | [中文](../i18n/OPEN_SOURCE_SCOPE_zh.md)

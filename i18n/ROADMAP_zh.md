@@ -1,4 +1,4 @@
-# 路线图
+﻿# 路线图
 
 这份路线图聚焦 Axiqra 面向生态开放的部分。
 
@@ -19,8 +19,8 @@
 
 ## Phase 2: MCP 和 CLI 原型
 
-- 构建最小 MCP server，用于工程记忆检索
-- 构建 CLI，用于 trace 导入、校验、脱敏和回写
+- 构建最小 MCP server
+- 构建 CLI 用于 trace 导入、校验、脱敏和回写
 - 增加面向 Codex 的工作流样例
 - 增加 schema 校验和脱敏测试
 
@@ -39,3 +39,7 @@
 - Public Case / Private Case 边界
 - 申诉和仲裁工作流
 - 可信来源与污染隔离控制
+
+---
+
+[English](../docs/ROADMAP.md) | [中文](ROADMAP_zh.md)

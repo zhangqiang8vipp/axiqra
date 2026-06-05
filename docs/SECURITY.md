@@ -43,3 +43,7 @@ The project especially welcomes review of:
 - MCP/API/CLI writeback safety
 - trusted-source and contamination controls
 - dependency or supply-chain risks
+
+---
+
+[English](SECURITY.md) | [中文](../i18n/SECURITY_zh.md)

@@ -1,4 +1,4 @@
-# Axiqra 贡献指南
+﻿# Axiqra 贡献指南
 
 感谢你帮助 Axiqra 成为对维护者、贡献者和 AI 编程工具有用的工程记忆基础设施。
 
@@ -18,7 +18,7 @@
 2. Pull request 尽量聚焦一个主题。
 3. 说明你的改动支持哪类维护者或 AI Agent 工作流。
 4. 不要提交私有代码、日志、密钥、客户名、内部域名或私有仓库路径。
-5. 文档改动请链接相关 `docs/` 文件。
+5. 文档改动请链接相关文档。
 
 ## Public Case 规则
 
@@ -49,3 +49,7 @@ Public Case 不应包含：
 - 受影响文档链接
 - 安全或隐私注意事项
 - schema、协议或工作流变化的示例
+
+---
+
+[English](../docs/CONTRIBUTING.md) | [中文](CONTRIBUTING_zh.md)

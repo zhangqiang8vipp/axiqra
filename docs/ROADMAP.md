@@ -39,3 +39,7 @@ This roadmap is focused on the open ecosystem-facing parts of Axiqra.
 - public/private Case boundaries
 - appeal and arbitration workflow
 - trusted-source and contamination controls
+
+---
+
+[English](ROADMAP.md) | [中文](../i18n/ROADMAP_zh.md)
