@@ -1,4 +1,4 @@
-.PHONY: help website-up website-down website-logs website-ps infra-up infra-down infra-restart infra-logs infra-ps infra-health infra-clean
+.PHONY: help website-up website-down website-logs website-ps website-restart infra-up infra-down infra-restart infra-logs infra-ps infra-health infra-clean
 
 help:
 	@echo "Axiqra Project"

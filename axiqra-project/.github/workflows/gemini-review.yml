@@ -75,17 +75,24 @@ jobs:
           BASE="${{ steps.pr_info.outputs.base }}"
           DIFF_SIZE="${{ steps.diff.outputs.diff_size }}"
 
+          # 构建 prompt 文本（使用 jq --arg 安全转义）
+          PROMPT=$(jq -n \
+            --arg pr_info "$PR_INFO" \
+            --arg author "$AUTHOR" \
+            --arg base "$BASE" \
+            --arg diff_size "$DIFF_SIZE" \
+            'You are an expert code reviewer for the Axiqra project (a knowledge engineering and memory system). Review the following PR changes.\n\nPR: \($pr_info)\nAuthor: \($author)\nBase branch: \($base)\n\nReview focus areas:\n1. Security: hardcoded secrets, API key leaks, injection risks\n2. MCP protocol compliance: quota limits, error handling\n3. Error handling: async try/catch, proper HTTP status codes\n4. Test coverage: new code has corresponding tests\n5. Code quality: ESM imports, naming, error context\n\nProvide your review in this format:\n## Summary\n[One paragraph overview]\n\n## Critical Issues (must fix)\n- [file:line] - issue description\n\n## Suggestions (recommended)\n- [file:line] - suggestion description\n\n## Positive Highlights\n- What was done well\n\nDiff size: \($diff_size) lines\nOutput format: Markdown')
+
+          # 构建 JSON payload（使用 jq --arg 安全注入 prompt）
+          PAYLOAD=$(jq -n \
+            --arg prompt "$PROMPT" \
+            '{contents: [{parts: [{text: $prompt}]}]}')
+
           # 调用 Gemini API 进行代码审查
           RESPONSE=$(curl -s -X POST \
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY" \
             -H "Content-Type: application/json" \
-            -d '{
-              "contents": [{
-                "parts": [{
-                  "text": "You are an expert code reviewer for the Axiqra project (a knowledge engineering and memory system). Review the following PR changes.\n\nPR: '"$PR_INFO"'\nAuthor: '"$AUTHOR"'\nBase branch: '"$BASE"'\n\nReview focus areas:\n1. Security: hardcoded secrets, API key leaks, injection risks\n2. MCP protocol compliance: quota limits, error handling\n3. Error handling: async try/catch, proper HTTP status codes\n4. Test coverage: new code has corresponding tests\n5. Code quality: ESM imports, naming, error context\n\nProvide your review in this format:\n## Summary\n[One paragraph overview]\n\n## Critical Issues (must fix)\n- [file:line] - issue description\n\n## Suggestions (recommended)\n- [file:line] - suggestion description\n\n## Positive Highlights\n- What was done well\n\nDiff size: '"$DIFF_SIZE"' lines\nOutput format: Markdown"
-                }]
-              }]
-            }')
+            -d "$PAYLOAD")
 
           REVIEW=$(echo $RESPONSE | jq -r '.candidates[0].content.parts[0].text // empty')
 

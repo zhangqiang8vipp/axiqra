@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import csv
+import io
 import json
 import os
 import re
+import threading
 import time
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -30,6 +32,7 @@ ALLOWED_ORIGINS = {
     "http://127.0.0.1:8080",
 }
 RATE_BUCKETS: dict[str, list[float]] = {}
+RATE_BUCKETS_LOCK = threading.Lock()
 FIELDNAMES = [
     "created_at",
     "name",
@@ -67,11 +70,16 @@ def read_rows(file_handle: Any) -> list[dict[str, str]]:
     if not sample.strip():
         return []
     file_handle.seek(0)
-    return list(csv.DictReader(file_handle))
+    text = file_handle.read()
+    if text.startswith("\ufeff"):
+        text = text[1:]
+    return list(csv.DictReader(io.StringIO(text)))
 
 
 def append_waitlist_row(row: dict[str, str]) -> tuple[bool, int]:
     DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    is_new_file = not DATA_PATH.exists() or DATA_PATH.stat().st_size == 0
 
     with DATA_PATH.open("a+", newline="", encoding="utf-8") as file_handle:
         if fcntl is not None:
@@ -85,9 +93,10 @@ def append_waitlist_row(row: dict[str, str]) -> tuple[bool, int]:
             )
 
             if not duplicate:
-                file_handle.seek(0, os.SEEK_END)
+                if is_new_file:
+                    file_handle.write("\ufeff")
                 writer = csv.DictWriter(file_handle, fieldnames=FIELDNAMES)
-                if not rows and file_handle.tell() == 0:
+                if is_new_file:
                     writer.writeheader()
                 writer.writerow(row)
                 file_handle.flush()
@@ -231,27 +240,28 @@ class WaitlistHandler(BaseHTTPRequestHandler):
     def _rate_limit_ok(self, client_ip: str) -> bool:
         now = time.monotonic()
         window_start = now - RATE_LIMIT_WINDOW_SECONDS
-        if len(RATE_BUCKETS) > RATE_LIMIT_MAX_BUCKETS:
-            stale_clients = [
-                ip
-                for ip, stamps in RATE_BUCKETS.items()
-                if not stamps or max(stamps) < window_start
-            ]
-            for ip in stale_clients:
-                RATE_BUCKETS.pop(ip, None)
+        with RATE_BUCKETS_LOCK:
             if len(RATE_BUCKETS) > RATE_LIMIT_MAX_BUCKETS:
-                oldest_ip = min(
-                    RATE_BUCKETS,
-                    key=lambda ip: max(RATE_BUCKETS[ip]) if RATE_BUCKETS[ip] else 0,
-                )
-                RATE_BUCKETS.pop(oldest_ip, None)
-        bucket = [stamp for stamp in RATE_BUCKETS.get(client_ip, []) if stamp >= window_start]
-        if len(bucket) >= RATE_LIMIT_MAX_REQUESTS:
+                stale_clients = [
+                    ip
+                    for ip, stamps in RATE_BUCKETS.items()
+                    if not stamps or max(stamps) < window_start
+                ]
+                for ip in stale_clients:
+                    RATE_BUCKETS.pop(ip, None)
+                if len(RATE_BUCKETS) > RATE_LIMIT_MAX_BUCKETS:
+                    oldest_ip = min(
+                        RATE_BUCKETS,
+                        key=lambda ip: max(RATE_BUCKETS[ip]) if RATE_BUCKETS[ip] else 0,
+                    )
+                    RATE_BUCKETS.pop(oldest_ip, None)
+            bucket = [stamp for stamp in RATE_BUCKETS.get(client_ip, []) if stamp >= window_start]
+            if len(bucket) >= RATE_LIMIT_MAX_REQUESTS:
+                RATE_BUCKETS[client_ip] = bucket
+                return False
+            bucket.append(now)
             RATE_BUCKETS[client_ip] = bucket
-            return False
-        bucket.append(now)
-        RATE_BUCKETS[client_ip] = bucket
-        return True
+            return True
 
 
 def main() -> None:

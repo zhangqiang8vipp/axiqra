@@ -43,27 +43,25 @@ jobs:
           fi
 
       - name: Setup Node.js
-        if: env.OPENAI_API_KEY != ''
+        if: secrets.OPENAI_API_KEY != ''
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "npm"
 
       - name: Install OpenAI SDK
-        if: env.OPENAI_API_KEY != ''
+        if: secrets.OPENAI_API_KEY != ''
         run: npm install openai
 
       - name: Run Codex Review
         id: review
-        if: env.OPENAI_API_KEY != ''
+        if: secrets.OPENAI_API_KEY != ''
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_NUMBER: ${{ steps.diff.outputs.pr_number }}
+          PR_DIFF: ${{ steps.diff.outputs.diff_size }}
         run: |
           node .github/scripts/codex-review.mjs
-        env:
-          PR_DIFF: ${{ steps.diff.outputs.diff_size }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Post review comment
         if: steps.review.outputs.review_body != ''

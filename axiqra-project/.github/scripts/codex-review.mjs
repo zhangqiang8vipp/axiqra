@@ -4,9 +4,9 @@
  * 需要环境变量: OPENAI_API_KEY
  */
 
-import { config } from 'process';
+import { writeFileSync } from 'fs';
 
-const OPENAI_API_KEY = config.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 if (!OPENAI_API_KEY) {
   console.log('::warning::OPENAI_API_KEY not set. Skipping Codex review.');
@@ -136,7 +136,10 @@ Provide your review focusing on:
   const review = await callCodex(prompt);
 
   if (review) {
-    console.log('::set-output name=review_body::' + review.replace(/\n/g, '%0A'));
+    const outputPath = process.env.GITHUB_OUTPUT;
+    if (outputPath) {
+      writeFileSync(outputPath, `review_body<<EOF\n${review}\nEOF\n`, { flag: 'a' });
+    }
     console.log('\n=== Codex Review ===\n');
     console.log(review);
   } else {

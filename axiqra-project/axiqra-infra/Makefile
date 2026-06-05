@@ -11,7 +11,17 @@ help:
 	@echo "  make clean    清理数据卷（数据将丢失）"
 
 up:
-	cp .env.example .env 2>/dev/null; docker compose up -d
+	@if [ -f .env ]; then \
+		echo ".env already exists, skipping copy."; \
+	else \
+		if [ ! -f .env.example ]; then \
+			echo "ERROR: .env.example not found. Cannot create .env."; \
+			exit 1; \
+		fi; \
+		cp .env.example .env; \
+		echo ".env created from .env.example"; \
+	fi
+	docker compose up -d
 	@echo "等待 healthcheck（最多 120s）..."
 	@docker compose ps
 
