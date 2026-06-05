@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Axiqra is the engineering Solution memory layer for AI coding tools, developers, and teams: search real engineering memory before work, then write complete traces back after work.">
+  <meta name="theme-color" content="#fbfbf8">
+  <meta property="og:title" content="Axiqra - AI engineering memory, built for the internet">
+  <meta property="og:description" content="Axiqra turns real engineering tasks, traces, cases, evidence, boundaries, and feedback into a reusable Solution network for AI tools and developers.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/assets/axiqra-memory-hero.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.ico?v=4" type="image/x-icon">
+  <link rel="icon" href="/logo/icon-32.png?v=4" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/logo/icon-192.png?v=4">
+  <link rel="manifest" href="/site.webmanifest">
+  <title>Axiqra - AI engineering memory, built for the internet</title>
+  <style>
+    :root{
+      --ink:#111318;
+      --sub:#5c6675;
+      --soft:#8a93a2;
+      --blue:#1267ff;
+      --aqua:#18c4bd;
+      --lime:#c8ff5f;
+      --rose:#ff7aa8;
+      --paper:#fbfbf8;
+      --line:rgba(17,19,24,.12);
+      --line-blue:rgba(18,103,255,.18);
+      --dark:#0b0f17;
+      --green:#12966b;
+      --red:#b64040;
+      --shadow:0 30px 90px rgba(20,38,68,.14);
+      --header:76px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI","Microsoft YaHei UI","Microsoft YaHei",sans-serif;color:var(--ink);background:
+      radial-gradient(circle at 16% 8%,rgba(18,103,255,.06),transparent 26%),
+      radial-gradient(circle at 88% 4%,rgba(24,196,189,.07),transparent 24%),
+      linear-gradient(180deg,#fbfbf8,#ffffff 42%,#fbfbf8);
+      overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    p,h1,h2,h3{margin-top:0;overflow-wrap:anywhere}
+    p{color:var(--sub);line-height:1.62}
+    img{display:block;max-width:100%}
+    .wrap{width:min(1200px,calc(100% - 40px));margin:0 auto}
+    .header{position:fixed;top:0;left:0;right:0;height:var(--header);z-index:50;background:rgba(251,251,248,.72);backdrop-filter:blur(22px) saturate(160%);border-bottom:1px solid rgba(17,19,24,.08)}
+    .nav{height:100%;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.02em}
+    .brand img{width:30px;height:30px}
+    .links{display:flex;gap:24px;color:#3d4653;font-size:14px}
+    .links a:hover{color:var(--blue)}
+    .actions{display:flex;align-items:center;gap:10px}
+    .lang-switch{display:inline-flex;align-items:center;gap:2px;height:36px;padding:3px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.62);backdrop-filter:blur(12px)}
+    .lang-switch button{height:28px;border:0;border-radius:999px;background:transparent;padding:0 9px;font-size:12px;font-weight:900;color:#667287}
+    .lang-switch button.active{background:#111318;color:#fff}
+    .join,.primary,.secondary{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-weight:900;text-decoration:none}
+    .join{height:40px;padding:0 18px;background:#111318;color:#fff;box-shadow:0 12px 26px rgba(8,11,18,.16)}
+    .primary{height:48px;padding:0 24px;background:var(--blue);color:#fff;box-shadow:0 18px 38px rgba(18,103,255,.25);border:0}
+    .secondary{height:48px;padding:0 22px;border:1px solid var(--line);color:#111318;background:rgba(255,255,255,.58);backdrop-filter:blur(14px)}
+    .mobile-toggle{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.66);font-size:20px}
+    .mobile-menu{display:none}
+    main{padding-top:var(--header)}
+    section{scroll-margin-top:calc(var(--header) + 28px)}
+    .hero{position:relative;min-height:calc(100vh - var(--header));display:grid;align-items:center;padding:34px 0 132px;overflow:hidden}
+    .orb{position:absolute;right:-13vw;top:1vh;width:min(780px,58vw);aspect-ratio:1;border-radius:50%;background:
+      radial-gradient(circle at 34% 27%,#fff 0 6%,transparent 7%),
+      radial-gradient(circle at 31% 34%,var(--lime),transparent 18%),
+      radial-gradient(circle at 55% 31%,var(--rose),transparent 18%),
+      radial-gradient(circle at 56% 52%,var(--aqua),transparent 34%),
+      radial-gradient(circle at 43% 65%,var(--blue),transparent 46%),
+      #dfefff;filter:saturate(1.08);box-shadow:0 80px 180px rgba(18,103,255,.22)}
+    .orb:after{content:"";position:absolute;inset:12%;border-radius:50%;border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 0 90px rgba(255,255,255,.38)}
+    .trail{position:absolute;right:20vw;top:17vh;width:340px;height:160px;border-top:1px solid rgba(18,103,255,.28);border-left:1px solid rgba(24,196,189,.24);border-radius:80px 0 0 0;transform:rotate(-14deg);opacity:.75}
+    .trail:before,.trail:after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 8px rgba(18,103,255,.09)}
+    .trail:before{left:-5px;top:-5px}
+    .trail:after{right:-4px;top:-5px;background:var(--aqua);box-shadow:0 0 0 8px rgba(24,196,189,.10)}
+    .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,760px) 1fr;gap:44px;align-items:end}
+    .label{display:inline-flex;margin-bottom:26px;border:1px solid var(--line);border-radius:999px;padding:9px 14px;background:rgba(255,255,255,.55);backdrop-filter:blur(18px);font-size:13px;font-weight:900;color:#1158ce}
+    h1{margin:0;font-size:clamp(76px,10.4vw,150px);line-height:.84;letter-spacing:-.08em;font-weight:950}
+    h1 span{display:block;white-space:nowrap;overflow-wrap:normal;word-break:keep-all;hyphens:none}
+    html[lang="en"] h1{font-size:clamp(72px,9.6vw,138px);line-height:.9;letter-spacing:-.065em}
+    .thin{font-weight:760;color:#8a93a2}
+    .blue{color:var(--blue)}
+    .copy{max-width:650px;margin:34px 0 0;font-size:clamp(19px,2vw,25px);line-height:1.45;color:#343e4e;letter-spacing:-.02em}
+    .copy b{color:var(--ink)}
+    .hero-actions{display:flex;gap:12px;margin-top:34px;flex-wrap:wrap}
+    .signal{align-self:stretch;display:grid;align-content:end;gap:14px;max-width:390px;justify-self:end}
+    .signal-card{position:relative;border:1px solid rgba(255,255,255,.66);background:rgba(255,255,255,.50);backdrop-filter:blur(24px);border-radius:32px;padding:24px;box-shadow:0 24px 70px rgba(17,19,24,.10);overflow:hidden}
+    .signal-card:before{content:"";position:absolute;left:20px;right:20px;top:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--aqua),var(--lime));border-radius:999px}
+    .signal-card b{display:block;font-size:15px;margin-bottom:8px}
+    .signal-card p{margin:0;color:#4d5868;line-height:1.5}
+    .kicker{margin:0 0 14px;color:#1164d8;font-size:13px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
+    h2{font-size:clamp(42px,6vw,86px);line-height:.94;letter-spacing:-.065em;margin-bottom:20px}
+    .lead{max-width:760px;font-size:20px;color:#465468}
+    .section{padding:104px 0}
+    .center{text-align:center}
+    .center h2,.center .lead{margin-left:auto;margin-right:auto}
+    .paths{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:96px 0 120px}
+    .paths:before{content:"";position:absolute;left:8%;right:8%;top:42%;height:1px;background:linear-gradient(90deg,transparent,rgba(18,103,255,.22),rgba(24,196,189,.22),transparent)}
+    .tile{position:relative;min-height:270px;border:1px solid var(--line-blue);border-radius:36px;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(239,247,255,.74));backdrop-filter:blur(18px);display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 18px 58px rgba(18,103,255,.08)}
+    .tile:before{content:"";position:absolute;inset:1px;border-radius:35px;border:1px solid rgba(255,255,255,.76);pointer-events:none}
+    .tile strong{display:block;color:var(--blue);margin-bottom:42px}
+    .tile h3{font-size:31px;line-height:1;letter-spacing:-.045em;margin:0 0 12px}
+    .tile p{margin:0}
+    .how{background:#0a0d14;color:#fff;border-radius:56px;margin:0 auto;width:min(1260px,calc(100% - 24px));padding:96px 0;overflow:hidden}
+    .how p{color:#b8c3d2}
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px}
+    .step{min-height:260px;border:1px solid rgba(255,255,255,.12);border-radius:32px;padding:26px;background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.035));display:flex;flex-direction:column;justify-content:flex-end}
+    .step span{color:#7cc9ff;font-weight:950;margin-bottom:auto}
+    .step h3{font-size:28px;letter-spacing:-.04em;margin-bottom:8px}
+    .cap-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:42px}
+    .cap-large,.cap-side{border:1px solid var(--line);border-radius:38px;background:#fff;box-shadow:0 1px 0 rgba(17,19,24,.03)}
+    .cap-large{min-height:560px;padding:36px;background:linear-gradient(180deg,#fff,#f4f9ff);overflow:hidden}
+    .cap-side{display:grid;gap:14px;background:transparent;border:0;box-shadow:none}
+    .cap-card{padding:26px;border:1px solid var(--line);border-radius:32px;background:#fff}
+    .cap-card h3,.cap-large h3{font-size:32px;line-height:1.05;letter-spacing:-.045em;margin:0 0 10px}
+    .trace-visual{position:relative;isolation:isolate;margin-top:34px;min-height:370px;border-radius:30px;background:
+      radial-gradient(circle at 50% 48%,rgba(18,103,255,.18),transparent 32%),
+      radial-gradient(circle at 22% 18%,rgba(200,255,95,.18),transparent 24%),
+      radial-gradient(circle at 78% 24%,rgba(255,122,168,.18),transparent 24%),
+      linear-gradient(180deg,rgba(255,255,255,.78),rgba(231,242,255,.72));
+      border:1px solid rgba(18,103,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+    .trace-visual:before{content:"";position:absolute;z-index:0;inset:34px;border:1px solid rgba(18,103,255,.18);border-radius:50%;transform:rotate(-12deg)}
+    .trace-visual:after{content:"";position:absolute;z-index:0;left:50%;top:50%;width:58%;height:34%;border:1px solid rgba(24,196,189,.22);border-radius:50%;transform:translate(-50%,-50%) rotate(18deg)}
+    .trace-core{position:absolute;z-index:2;left:50%;top:50%;width:160px;height:160px;border-radius:50%;transform:translate(-50%,-50%);display:grid;place-items:center;text-align:center;padding:18px;background:linear-gradient(180deg,#111318,#172033);color:#fff;box-shadow:0 30px 80px rgba(17,19,24,.24)}
+    .trace-core strong{font-size:15px;line-height:1.05;letter-spacing:-.02em}
+    .trace-core span{display:block;margin-top:8px;color:#8fc6ff;font-size:12px;font-weight:900;text-transform:uppercase}
+    .trace-node{position:absolute;z-index:3;min-width:132px;padding:11px 14px;border:1px solid rgba(18,103,255,.18);border-radius:999px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);box-shadow:0 14px 38px rgba(18,103,255,.10);font-size:13px;font-weight:950;color:#243044;text-align:center}
+    .trace-node:before{content:"";display:inline-block;width:8px;height:8px;margin-right:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 5px rgba(18,103,255,.10)}
+    .trace-node:nth-child(2){left:7%;top:13%}
+    .trace-node:nth-child(3){right:8%;top:13%}
+    .trace-node:nth-child(4){left:5%;top:50%}
+    .trace-node:nth-child(5){right:6%;top:50%}
+    .trace-node:nth-child(6){left:19%;bottom:9%}
+    .trace-node:nth-child(7){right:18%;bottom:9%}
+    .trace-caption{display:none}
+    html[lang="zh-CN"] h1{font-size:clamp(72px,9.2vw,126px);line-height:1.02;letter-spacing:-.035em}
+    html[lang="zh-CN"] h2{line-height:1.06;letter-spacing:-.035em}
+    html[lang="zh-CN"] .cap-card h3,html[lang="zh-CN"] .cap-large h3,html[lang="zh-CN"] .demo-text h3{line-height:1.14;letter-spacing:-.025em}
+    html[lang="zh-CN"] p{line-height:1.72}
+    html[lang="zh-CN"] .copy{line-height:1.56;letter-spacing:0}
+    .demo{display:grid;grid-template-columns:.75fr 1.25fr;gap:18px;margin-top:42px;align-items:start}
+    .demo-text{position:sticky;top:104px;border:1px solid var(--line);border-radius:36px;padding:30px;background:#fff}
+    .demo-text h3{font-size:36px;line-height:1.04;letter-spacing:-.05em;margin:0 0 12px}
+    .tabs{border:1px solid var(--line);border-radius:36px;background:#fff;box-shadow:var(--shadow);overflow:hidden}
+    .tabbar{display:flex;gap:6px;padding:12px;border-bottom:1px solid rgba(17,19,24,.08);overflow:auto;background:#f8fafc}
+    .tabbar button{border:0;background:transparent;padding:11px 14px;border-radius:999px;color:#536174;font-weight:850;white-space:nowrap}
+    .tabbar button[aria-selected=true]{background:#111318;color:#fff}
+    .tabpanel{display:none;padding:28px}
+    .tabpanel.active{display:block}
+    .case-open{margin-top:18px;height:42px;border:1px solid rgba(18,103,255,.22);border-radius:999px;background:#eef6ff;color:#1158ce;padding:0 16px;font-weight:950;box-shadow:0 12px 28px rgba(18,103,255,.10)}
+    .code{margin-top:16px;border-radius:22px;background:#0b1220;color:#eaf3ff;padding:18px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow:auto}
+    .copy-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .copy-btn{height:38px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:0 14px;font-weight:850}
+    .trust{background:#f6f9fc}
+    .trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:42px}
+    .level{display:grid;grid-template-columns:58px 1fr;gap:14px;padding:18px;border:1px solid var(--line);border-radius:28px;background:#fff}
+    .level strong{display:grid;place-items:center;width:46px;height:38px;border-radius:14px;background:#eaf3ff;color:var(--blue)}
+    .level h3{margin:0 0 5px;font-size:20px}
+    .form-section{padding-bottom:120px}
+    .cta-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:30px;align-items:start}
+    .form{padding:28px;border:1px solid var(--line-blue);border-radius:36px;background:#fff;box-shadow:var(--shadow)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+    label{display:grid;gap:7px;color:#2d394b;font-size:13px;font-weight:850}
+    input,select,textarea{width:100%;border:1px solid #ccd8e4;border-radius:16px;background:#fff;color:var(--ink);padding:13px 14px;outline:none}
+    textarea{min-height:104px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(18,103,255,.12)}
+    .full{grid-column:1/-1}
+    .check{display:flex;gap:10px;align-items:flex-start;margin:15px 0;color:#4c5a6d;font-size:13px}
+    .check input{width:18px;height:18px;margin-top:2px;flex:0 0 auto}
+    .honeypot{position:absolute;left:-9999px}
+    .message{min-height:23px;margin-top:12px;font-weight:850;font-size:14px}
+    .message.ok{color:var(--green)}
+    .message.err{color:var(--red)}
+    .modal{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:24px;background:rgba(8,12,20,.46);backdrop-filter:blur(16px)}
+    .modal.open{display:grid}
+    .modal-panel{width:min(980px,100%);max-height:min(86vh,820px);overflow:auto;border-radius:34px;background:linear-gradient(180deg,#fff,#f6fbff);box-shadow:0 40px 120px rgba(8,12,20,.32);border:1px solid rgba(255,255,255,.72)}
+    .modal-head{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:26px 28px 18px;background:rgba(255,255,255,.86);backdrop-filter:blur(18px);border-bottom:1px solid rgba(17,19,24,.08)}
+    .modal-head p{margin:8px 0 0}
+    .modal-head h3{font-size:34px;line-height:1.02;letter-spacing:-.045em;margin:0}
+    .modal-close{flex:0 0 auto;width:42px;height:42px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:24px;line-height:1;color:#111318}
+    .case-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px 28px 28px}
+    .case-block{border:1px solid rgba(17,19,24,.10);border-radius:26px;background:rgba(255,255,255,.78);padding:20px}
+    .case-block.wide{grid-column:1/-1}
+    .case-block h4{margin:0 0 10px;font-size:17px;letter-spacing:-.025em}
+    .case-block p{margin:0}
+    .case-block ul{margin:0;padding-left:18px;color:#536174;line-height:1.62}
+    .case-block li+li{margin-top:6px}
+    .case-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .case-meta span{display:inline-flex;align-items:center;min-height:30px;padding:5px 10px;border-radius:999px;background:#eaf3ff;color:#1158ce;font-size:12px;font-weight:900}
+    footer{border-top:1px solid var(--line);padding:34px 0 44px;color:#566477}
+    .footer-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .footer-links{display:flex;gap:16px;flex-wrap:wrap}
+    @media(max-width:1120px){
+      .cap-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:980px){
+      .links{display:none}
+      .mobile-toggle{display:inline-grid;place-items:center}
+      .mobile-menu.open{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;position:fixed;top:var(--header);left:0;right:0;z-index:49;padding:14px 20px;border-bottom:1px solid var(--line);background:rgba(251,251,248,.96);box-shadow:0 20px 50px rgba(17,19,24,.08)}
+      .mobile-menu a{padding:12px;border:1px solid var(--line);border-radius:16px;background:#fff}
+      .hero-grid,.cap-grid,.demo,.trust-grid,.cta-grid{grid-template-columns:1fr}
+      .signal{justify-self:stretch;max-width:none}
+      .paths,.steps{grid-template-columns:1fr}
+      .demo-text{position:static}
+      .trace-visual{min-height:360px}
+    }
+    @media(max-width:640px){
+      :root{--header:66px}
+      .wrap{width:min(100% - 28px,1200px)}
+      .actions .secondary{display:none}
+      .hero{padding-top:38px}
+      .orb{right:-48vw;top:12vh;width:120vw;opacity:.56}
+      .trail{display:none}
+      h1{font-size:clamp(64px,18vw,88px);line-height:.9}
+      html[lang="en"] h1{font-size:clamp(50px,13.7vw,64px);line-height:.94;letter-spacing:-.055em}
+      html[lang="zh-CN"] h1{font-size:clamp(52px,14.2vw,68px);line-height:1.08;letter-spacing:-.02em}
+      h2{font-size:clamp(40px,12vw,56px)}
+      html[lang="zh-CN"] h2{font-size:clamp(36px,10.5vw,50px)}
+      .hero-actions{display:grid;width:min(100%,310px)}
+      .primary,.secondary{width:100%}
+      .section{padding:76px 0}
+      .how{border-radius:36px;width:calc(100% - 14px);padding:70px 0}
+      .mobile-menu.open,.form-grid{grid-template-columns:1fr}
+      .modal{padding:12px}
+      .modal-panel{border-radius:26px;max-height:88vh}
+      .modal-head{padding:20px 18px 14px}
+      .modal-head h3{font-size:28px;line-height:1.08}
+      .case-grid{grid-template-columns:1fr;padding:14px 18px 20px}
+      .case-block{border-radius:22px;padding:17px}
+      .paths{padding-top:70px}
+      .tile{min-height:230px}
+      .cap-large{padding:24px}
+      .trace-visual{min-height:420px;margin-top:26px}
+      .trace-visual:before{inset:58px 26px}
+      .trace-visual:after{width:76%;height:22%}
+      .trace-core{width:146px;height:146px}
+      .trace-node{min-width:126px;font-size:12px;padding:10px 12px}
+      .trace-node:nth-child(2){left:50%;top:22px;transform:translateX(-50%)}
+      .trace-node:nth-child(3){right:18px;top:96px}
+      .trace-node:nth-child(4){left:18px;top:96px}
+      .trace-node:nth-child(5){right:18px;top:auto;bottom:96px}
+      .trace-node:nth-child(6){left:18px;bottom:96px}
+      .trace-node:nth-child(7){left:50%;right:auto;bottom:22px;transform:translateX(-50%)}
+      .trace-caption{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="wrap nav">
+      <a class="brand" href="#top"><img src="/logo/icon.svg" alt="">Axiqra</a>
+      <nav class="links">
+        <a href="#memory" data-i18n="navMemory">Memory</a>
+        <a href="#solutions" data-i18n="navSolutions">Solutions</a>
+        <a href="#trust" data-i18n="navTrust">Trust</a>
+        <a href="#waitlist" data-i18n="navEarly">Early access</a>
+      </nav>
+      <div class="actions">
+        <div class="lang-switch" aria-label="Language switch">
+          <button type="button" data-lang="en" class="active">EN</button>
+          <button type="button" data-lang="zh">中文</button>
+        </div>
+        <a class="join" href="#waitlist" data-i18n="navJoin">Join beta</a>
+        <button class="mobile-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="mobile-menu">
+      <a href="#memory" data-i18n="navMemory">Memory</a>
+      <a href="#solutions" data-i18n="navSolutions">Solutions</a>
+      <a href="#trust" data-i18n="navTrust">Trust</a>
+      <a href="#waitlist" data-i18n="navEarly">Early access</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap">
+        <div class="orb" aria-hidden="true"></div>
+        <div class="trail" aria-hidden="true"></div>
+        <div class="hero-grid">
+          <div>
+            <div class="label" data-i18n="heroLabel">AI engineering memory, built for the internet</div>
+            <h1>
+              <span class="thin" data-i18n="heroLine1">Agent-ready</span>
+              <span data-i18n="heroLine2">engineering</span>
+              <span class="blue" data-i18n="heroLine3">memory.</span>
+            </h1>
+            <p class="copy" data-i18n="heroCopy">Axiqra turns real engineering tasks, traces, cases, evidence, boundaries, and feedback into a reusable Solution network for AI coding tools, developers, and teams.</p>
+            <div class="hero-actions">
+              <a class="primary" href="#waitlist" data-i18n="heroPrimary">Join early access</a>
+              <a class="secondary" href="#solutions" data-i18n="heroSecondary">See the Solution network</a>
+            </div>
+          </div>
+          <aside class="signal">
+            <div class="signal-card"><b data-i18n="signalBeforeTitle">Before engineering work</b><p data-i18n="signalBeforeText">Agent searches Solutions, Cases, failed paths, boundaries, and risk notes before it acts.</p></div>
+            <div class="signal-card"><b data-i18n="signalAfterTitle">After engineering work</b><p data-i18n="signalAfterText">The trace becomes a Project Case, then a Public Case or Solution when authorized and reviewed.</p></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap paths" id="memory">
+      <article class="tile"><strong data-i18n="pathPersonal">Personal</strong><h3 data-i18n="pathPersonalTitle">For one developer.</h3><p data-i18n="pathPersonalText">Stop teaching every AI session the same stack, bug, workaround, and verification path.</p></article>
+      <article class="tile"><strong data-i18n="pathTeam">Team</strong><h3 data-i18n="pathTeamTitle">For teams.</h3><p data-i18n="pathTeamText">Turn repeated engineering tasks, conventions, reviews, and feedback into shared engineering memory.</p></article>
+      <article class="tile"><strong data-i18n="pathEnterprise">Enterprise</strong><h3 data-i18n="pathEnterpriseTitle">For enterprises.</h3><p data-i18n="pathEnterpriseText">Keep private spaces, redaction, authorization, audit, and risk review in the path.</p></article>
+    </section>
+
+    <section class="how">
+      <div class="wrap center">
+        <p class="kicker" data-i18n="howKicker">How it works</p>
+        <h2 data-i18n="howTitle">One trace in. A stronger Solution network out.</h2>
+        <p class="lead" data-i18n="howLead">Axiqra connects task-before search, execution, writeback, review, and feedback into a memory flywheel.</p>
+        <div class="steps">
+          <article class="step"><span>01</span><h3 data-i18n="step1Title">Search</h3><p data-i18n="step1Text">AI searches Solution, Public Case, Project Case, and Candidate Seed before acting.</p></article>
+          <article class="step"><span>02</span><h3 data-i18n="step2Title">Apply</h3><p data-i18n="step2Text">The AI or developer applies a candidate Solution with evidence, boundaries, validation, risk, and rollback notes.</p></article>
+          <article class="step"><span>03</span><h3 data-i18n="step3Title">Write back</h3><p data-i18n="step3Text">The Engineering Trace becomes a Project Case after user confirmation.</p></article>
+          <article class="step"><span>04</span><h3 data-i18n="step4Title">Evolve</h3><p data-i18n="step4Text">worked / failed / partial / not_applicable updates trust and applicability.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap center">
+      <p class="kicker" data-i18n="productKicker">Product</p>
+      <h2 data-i18n="productTitle">Not another editor. A memory layer behind the tools you already use.</h2>
+      <p class="lead" data-i18n="productLead">Axiqra gives existing AI coding tools searchable, verifiable, governable engineering memory.</p>
+      <div class="cap-grid">
+        <article class="cap-large">
+          <h3 data-i18n="traceTitle">Engineering Trace Package</h3>
+          <p data-i18n="traceText">Captures forward path, reverse path, decisions, evidence, rollback, and evolution. A real engineering task leaves not only the result, but also the reasoning.</p>
+          <div class="trace-visual" aria-hidden="true">
+            <div class="trace-core"><strong data-i18n="traceCore">Engineering Trace Package</strong><span data-i18n="traceCoreSub">Case input</span></div>
+            <div class="trace-node" data-i18n="traceForward">Forward path</div>
+            <div class="trace-node" data-i18n="traceReverse">Reverse path</div>
+            <div class="trace-node" data-i18n="traceDecision">Decisions</div>
+            <div class="trace-node" data-i18n="traceEvidence">Evidence</div>
+            <div class="trace-node" data-i18n="traceRollback">Rollback</div>
+            <div class="trace-node" data-i18n="traceEvolution">Evolution</div>
+            <div class="trace-caption" data-i18n="traceCaption">Confirmed by the user. Reviewed before reuse.</div>
+          </div>
+        </article>
+        <div class="cap-side">
+          <article class="cap-card"><h3 data-i18n="projectCaseTitle">Project Case</h3><p data-i18n="projectCaseText">Private by default. Stores the real engineering process inside personal, team, or enterprise spaces.</p></article>
+          <article class="cap-card"><h3 data-i18n="publicCaseTitle">Public Case</h3><p data-i18n="publicCaseText">Redacted and approved. Helps developers learn from real debugging paths.</p></article>
+          <article class="cap-card"><h3 data-i18n="solutionTitle">Solution</h3><p data-i18n="solutionText">Agent-callable. A reusable engineering playbook with boundaries, evidence, risk, and feedback.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="solutions">
+      <p class="kicker" data-i18n="exampleKicker">Solution example</p>
+      <h2 data-i18n="exampleTitle">A single engineering case becomes reusable Solution memory.</h2>
+      <div class="demo">
+        <aside class="demo-text">
+          <h3 data-i18n="exampleCardTitle">Not just the final answer.</h3>
+          <p data-i18n="exampleCardText">Axiqra also remembers why localhost is wrong inside the app container, which paths not to try first, how to verify, and how to report feedback.</p>
+        </aside>
+        <div class="tabs">
+          <div class="tabbar" role="tablist">
+            <button type="button" role="tab" aria-selected="true" data-tab="tab-ai" data-i18n="tabAI">AI view</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="tab-human" data-i18n="tabHuman">Human view</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="tab-guide" data-i18n="tabCommands">Commands</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="tab-prompt" data-i18n="tabPrompt">Prompt</button>
+          </div>
+          <div class="tabpanel active" id="tab-ai" role="tabpanel">
+            <h3 data-i18n="aiViewTitle">AI execution view</h3>
+            <p data-i18n="aiViewText">Check whether the app container uses localhost for Redis. Confirm compose service name and network before changing Redis bind or protected-mode.</p>
+            <div class="code" data-i18n="aiCode">Solution: docker-compose.redis-localhost
+Check: SPRING_DATA_REDIS_HOST should use service name, e.g. redis
+Verify: docker compose logs app && docker compose exec app getent hosts redis
+Rollback: restore previous env file or compose override</div>
+          </div>
+          <div class="tabpanel" id="tab-human" role="tabpanel">
+            <h3 data-i18n="humanViewTitle">Human learning view</h3>
+            <p data-i18n="humanViewText">A Public Case does not stop at the answer. It shows the incident scene, why localhost is an easy false lead, which checks ruled out Redis itself, the evidence chain that points to container networking, and how to transfer the same judgment to another stack.</p>
+            <button class="case-open" type="button" data-modal-open="public-case-modal" data-i18n="openCase">Open Public Case</button>
+          </div>
+          <div class="tabpanel" id="tab-guide" role="tabpanel">
+            <div class="copy-row"><h3 data-i18n="commandsTitle">Commands</h3><button class="copy-btn" type="button" data-copy="#guide-code" data-i18n="copy">Copy</button></div>
+            <div class="code" id="guide-code">docker compose ps
+docker compose exec app getent hosts redis
+docker compose logs app --tail=120
+docker compose up -d --build app</div>
+          </div>
+          <div class="tabpanel" id="tab-prompt" role="tabpanel">
+            <div class="copy-row"><h3 data-i18n="promptTitle">Prompt</h3><button class="copy-btn" type="button" data-copy="#prompt-code" data-i18n="copy">Copy</button></div>
+            <div class="code" id="prompt-code" data-i18n="promptCode">Use the Axiqra Solution pattern to debug a Docker Compose app failing to connect to Redis:
+1. Check whether the app container uses localhost for Redis.
+2. Check compose service name, network, and environment variables.
+3. Do not change Redis bind/protected-mode first unless evidence points there.
+4. Provide the diff, verification commands, and rollback path.
+5. After the task, prepare an Engineering Trace Package.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section trust" id="trust">
+      <div class="wrap">
+        <p class="kicker" data-i18n="trustKicker">Trust</p>
+        <h2 data-i18n="trustTitle">Trust is not a like button.</h2>
+        <p class="lead" data-i18n="trustLead">Validation level, sample size, evidence quality, applicability, risk, and feedback are shown separately. High-risk tasks still require human confirmation.</p>
+        <div class="trust-grid">
+          <div class="level"><strong>L0</strong><div><h3 data-i18n="l0Title">Draft</h3><p data-i18n="l0Text">No verified engineering context. Not recommended for automatic agent use.</p></div></div>
+          <div class="level"><strong>L1</strong><div><h3 data-i18n="l1Title">User-confirmed</h3><p data-i18n="l1Text">At least one real Project Case confirmed as worked.</p></div></div>
+          <div class="level"><strong>L2</strong><div><h3 data-i18n="l2Title">Evidence-backed</h3><p data-i18n="l2Text">Logs, tests, CI, deployment, screenshots, PR/Issue, or enterprise validation.</p></div></div>
+          <div class="level"><strong>L3+</strong><div><h3 data-i18n="l3Title">Reproducible</h3><p data-i18n="l3Text">More independent contexts and real feedback drive promotion, review, or downgrade.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap form-section" id="waitlist">
+      <div class="cta-grid">
+        <div>
+          <p class="kicker" data-i18n="waitKicker">Early access</p>
+          <h2 data-i18n="waitTitle">Bring your real engineering workflow.</h2>
+          <p class="lead" data-i18n="waitLead">Share your use case. We prioritize AI coding tool users, teams building engineering memory, enterprise Agent teams, and contributors with real Engineering Cases.</p>
+        </div>
+        <form class="form" id="waitlist-form" novalidate>
+          <div class="form-grid">
+            <label><span data-i18n="formName">Name</span><input name="name" autocomplete="name" required maxlength="80" placeholder="Your name" data-i18n-placeholder="formNamePh"></label>
+            <label><span data-i18n="formEmail">Email</span><input name="email" type="email" autocomplete="email" required maxlength="160" placeholder="you@example.com"></label>
+            <label><span data-i18n="formCompany">Company or team</span><input name="company" autocomplete="organization" maxlength="120" placeholder="Optional" data-i18n-placeholder="formCompanyPh"></label>
+            <label><span data-i18n="formRole">Role</span><select name="role" required>
+              <option value="" data-i18n="formRolePh">Select one</option>
+              <option value="personal_developer" data-i18n="rolePersonal">Individual developer</option>
+              <option value="ai_tool_user" data-i18n="roleAITool">AI tool user</option>
+              <option value="open_source_maintainer" data-i18n="roleOSS">Open-source maintainer</option>
+              <option value="startup_team" data-i18n="roleTeam">Small team / startup</option>
+              <option value="enterprise_agent_team" data-i18n="roleEnterprise">Enterprise R&D / Agent team</option>
+              <option value="contributor_reviewer" data-i18n="roleContributor">Contributor / reviewer</option>
+              <option value="platform_api_partner" data-i18n="rolePlatform">Platform / API partner</option>
+            </select></label>
+            <label class="full"><span data-i18n="formUse">Use case</span><textarea name="use_case" maxlength="400" placeholder="Example: let Codex search historical Solutions before an engineering task, then write back the Engineering Trace." data-i18n-placeholder="formUsePh"></textarea></label>
+          </div>
+          <label class="honeypot">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+          <label class="check"><input name="consent" type="checkbox" required><span data-i18n="consent">I agree that Axiqra may contact me about early access, team trials, or partnership conversations. This is not authorization to publish, train on, or commercially use my Cases.</span></label>
+          <button class="primary" type="submit" id="submit-btn" data-i18n="submit">Join early access</button>
+          <div class="message" id="form-message" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="public-case-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="public-case-title">
+    <div class="modal-panel" tabindex="-1">
+      <div class="modal-head">
+        <div>
+          <p class="kicker" data-i18n="caseModalKicker">Public Case</p>
+          <h3 id="public-case-title" data-i18n="caseModalTitle">Docker Compose Redis connection: why localhost misleads.</h3>
+          <p data-i18n="caseModalLead">A readable case for developers: not a shortcut answer, but the judgment path behind a reusable Solution.</p>
+          <div class="case-meta">
+            <span data-i18n="caseMetaStack">Docker Compose</span>
+            <span data-i18n="caseMetaMode">Learning mode</span>
+            <span data-i18n="caseMetaRisk">Low-risk example</span>
+          </div>
+        </div>
+        <button class="modal-close" type="button" data-modal-close aria-label="Close">×</button>
+      </div>
+      <div class="case-grid">
+        <article class="case-block">
+          <h4 data-i18n="caseSceneTitle">Scene</h4>
+          <p data-i18n="caseSceneText">The application starts in one container and Redis runs in another. The app reports that Redis is unreachable, while Redis itself appears healthy.</p>
+        </article>
+        <article class="case-block">
+          <h4 data-i18n="caseTrapTitle">Common trap</h4>
+          <p data-i18n="caseTrapText">A developer may tune Redis bind or protected-mode first. In this scene, localhost points back to the app container, so that path can waste time.</p>
+        </article>
+        <article class="case-block">
+          <h4 data-i18n="caseEvidenceTitle">Evidence chain</h4>
+          <ul>
+            <li data-i18n="caseEvidence1">Confirm both services are on the same Compose network.</li>
+            <li data-i18n="caseEvidence2">Resolve the Redis service name from inside the app container.</li>
+            <li data-i18n="caseEvidence3">Inspect environment variables before changing Redis security settings.</li>
+          </ul>
+        </article>
+        <article class="case-block">
+          <h4 data-i18n="casePathTitle">Solution path</h4>
+          <ul>
+            <li data-i18n="casePath1">Use the Compose service name, such as redis, as the host.</li>
+            <li data-i18n="casePath2">Verify with logs, DNS resolution, and a rebuilt app container.</li>
+            <li data-i18n="casePath3">Keep rollback simple by restoring the previous env file or override.</li>
+          </ul>
+        </article>
+        <article class="case-block wide">
+          <h4 data-i18n="caseLearnTitle">What the developer learns</h4>
+          <p data-i18n="caseLearnText">The reusable lesson is not “change host to redis”. It is how to reason from runtime boundary to service discovery, how to avoid a false lead, and how to decide whether the same Solution applies in another stack.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <a class="brand" href="#top"><img src="/logo/icon.svg" alt="">Axiqra</a>
+      <nav class="footer-links"><a href="#memory" data-i18n="navMemory">Memory</a><a href="#solutions" data-i18n="navSolutions">Solutions</a><a href="#trust" data-i18n="navTrust">Trust</a><a href="#waitlist" data-i18n="navEarly">Early access</a></nav>
+    </div>
+  </footer>
+
+  <script>
+    const i18n = {
+      en: {
+        title: 'Axiqra - AI engineering memory, built for the internet',
+        metaDescription: 'Axiqra is the engineering Solution memory layer for AI coding tools, developers, and teams: search real engineering memory before work, then write complete traces back after work.',
+        mobileMenu: 'Menu', close: 'Close',
+        navMemory: 'Memory', navSolutions: 'Solutions', navTrust: 'Trust', navEarly: 'Early access', navJoin: 'Join beta',
+        heroLabel: 'AI engineering memory, built for the internet',
+        heroLine1: 'Agent-ready', heroLine2: 'engineering', heroLine3: 'memory.',
+        heroCopy: 'Axiqra turns real engineering tasks, traces, cases, evidence, boundaries, and feedback into a reusable Solution network for AI coding tools, developers, and teams.',
+        heroPrimary: 'Join early access', heroSecondary: 'See the Solution network',
+        signalBeforeTitle: 'Before engineering work', signalBeforeText: 'Agent searches Solutions, Cases, failed paths, boundaries, and risk notes before it acts.',
+        signalAfterTitle: 'After engineering work', signalAfterText: 'The trace becomes a Project Case, then a Public Case or Solution when authorized and reviewed.',
+        pathPersonal: 'Personal', pathPersonalTitle: 'For one developer.', pathPersonalText: 'Stop teaching every AI session the same stack, environment, decision path, boundary, and verification standard.',
+        pathTeam: 'Team', pathTeamTitle: 'For teams.', pathTeamText: 'Turn repeated engineering tasks, conventions, reviews, and feedback into shared engineering memory.',
+        pathEnterprise: 'Enterprise', pathEnterpriseTitle: 'For enterprises.', pathEnterpriseText: 'Keep private spaces, redaction, authorization, audit, and risk review in the path.',
+        howKicker: 'How it works', howTitle: 'One trace in. A stronger Solution network out.', howLead: 'Axiqra connects task-before search, execution, trace writeback, review, and feedback into a memory flywheel.',
+        step1Title: 'Search', step1Text: 'AI searches Solution, Public Case, Project Case, and Candidate Seed before acting.',
+        step2Title: 'Apply', step2Text: 'The AI or developer applies a candidate Solution with evidence, boundaries, validation, risk, and rollback notes.',
+        step3Title: 'Write back', step3Text: 'The Engineering Trace becomes a Project Case after user confirmation.',
+        step4Title: 'Evolve', step4Text: 'worked / failed / partial / not_applicable updates trust and applicability.',
+        productKicker: 'Product', productTitle: 'Not another editor. A memory layer behind the tools you already use.', productLead: 'Axiqra gives existing AI coding tools searchable, verifiable, governable engineering memory.',
+        traceTitle: 'Engineering Trace Package', traceText: 'Captures forward path, reverse path, decisions, evidence, rollback, and evolution. A real engineering task leaves not only the result, but also the reasoning.',
+        traceCore: 'Engineering Trace Package', traceCoreSub: 'Case input', traceForward: 'Forward path', traceReverse: 'Reverse path', traceDecision: 'Decisions', traceEvidence: 'Evidence', traceRollback: 'Rollback', traceEvolution: 'Evolution', traceCaption: 'Confirmed by the user. Reviewed before reuse.',
+        projectCaseTitle: 'Project Case', projectCaseText: 'Private by default. Stores the real engineering process inside personal, team, or enterprise spaces.',
+        publicCaseTitle: 'Public Case', publicCaseText: 'Redacted and approved. Helps developers learn from real debugging paths.',
+        solutionTitle: 'Solution', solutionText: 'Agent-callable. A reusable engineering playbook with boundaries, evidence, risk, and feedback.',
+        exampleKicker: 'Solution example', exampleTitle: 'A single engineering case becomes reusable Solution memory.',
+        exampleCardTitle: 'Not just the final answer.', exampleCardText: 'Axiqra preserves the scene, wrong assumptions, evidence chain, boundaries, verification path, and feedback that make an engineering answer reusable.',
+        tabAI: 'AI view', tabHuman: 'Human view', tabCommands: 'Commands', tabPrompt: 'Prompt',
+        aiViewTitle: 'AI execution view', aiViewText: 'Check whether the app container uses localhost for Redis. Confirm compose service name and network before changing Redis bind or protected-mode.',
+        aiCode: 'Solution: docker-compose.redis-localhost\nCheck: SPRING_DATA_REDIS_HOST should use service name, e.g. redis\nVerify: docker compose logs app && docker compose exec app getent hosts redis\nRollback: restore previous env file or compose override',
+        humanViewTitle: 'Human learning view', humanViewText: 'A Public Case does not stop at the answer. It shows the incident scene, why localhost is an easy false lead, which checks ruled out Redis itself, the evidence chain that points to container networking, and how to transfer the same judgment to another stack.',
+        openCase: 'Open Public Case',
+        caseModalKicker: 'Public Case', caseModalTitle: 'Docker Compose Redis connection: why localhost misleads.', caseModalLead: 'A readable case for developers: not a shortcut answer, but the judgment path behind a reusable Solution.',
+        caseMetaStack: 'Docker Compose', caseMetaMode: 'Learning mode', caseMetaRisk: 'Low-risk example',
+        caseSceneTitle: 'Scene', caseSceneText: 'The application starts in one container and Redis runs in another. The app reports that Redis is unreachable, while Redis itself appears healthy.',
+        caseTrapTitle: 'Common trap', caseTrapText: 'A developer may tune Redis bind or protected-mode first. In this scene, localhost points back to the app container, so that path can waste time.',
+        caseEvidenceTitle: 'Evidence chain', caseEvidence1: 'Confirm both services are on the same Compose network.', caseEvidence2: 'Resolve the Redis service name from inside the app container.', caseEvidence3: 'Inspect environment variables before changing Redis security settings.',
+        casePathTitle: 'Solution path', casePath1: 'Use the Compose service name, such as redis, as the host.', casePath2: 'Verify with logs, DNS resolution, and a rebuilt app container.', casePath3: 'Keep rollback simple by restoring the previous env file or override.',
+        caseLearnTitle: 'What the developer learns', caseLearnText: 'The reusable lesson is not “change host to redis”. It is how to reason from runtime boundary to service discovery, how to avoid a false lead, and how to decide whether the same Solution applies in another stack.',
+        commandsTitle: 'Commands', copy: 'Copy', copied: 'Copied', copyFailed: 'Failed',
+        promptTitle: 'Prompt',
+        promptCode: 'Use the Axiqra Solution pattern for a Docker Compose Redis connectivity task:\n1. Search for matching Solution, Case, failed path, and applicability boundary.\n2. Check whether the app container uses localhost for Redis.\n3. Check compose service name, network, and environment variables.\n4. Provide the diff, verification commands, risk notes, and rollback path.\n5. After the task, prepare an Engineering Trace Package.',
+        trustKicker: 'Trust', trustTitle: 'Trust is not a like button.', trustLead: 'Validation level, sample size, evidence quality, applicability, risk, and feedback are shown separately. High-risk tasks still require human confirmation.',
+        l0Title: 'Draft', l0Text: 'No verified engineering context. Not recommended for automatic agent use.',
+        l1Title: 'User-confirmed', l1Text: 'At least one real Project Case confirmed as worked.',
+        l2Title: 'Evidence-backed', l2Text: 'Logs, tests, CI, deployment, screenshots, PR/Issue, or enterprise validation.',
+        l3Title: 'Reproducible', l3Text: 'More independent contexts and real feedback drive promotion, review, or downgrade.',
+        waitKicker: 'Early access', waitTitle: 'Bring your real engineering workflow.', waitLead: 'Share your use case. We prioritize AI coding tool users, developers, maintainers, teams building engineering memory, enterprise Agent teams, and contributors with real Engineering Cases.',
+        formName: 'Name', formNamePh: 'Your name', formEmail: 'Email', formCompany: 'Company or team', formCompanyPh: 'Optional',
+        formRole: 'Role', formRolePh: 'Select one', formUse: 'Use case', formUsePh: 'Example: let Codex search historical Solutions before an engineering task, then write back the Engineering Trace.',
+        rolePersonal: 'Individual developer', roleAITool: 'AI tool user', roleOSS: 'Open-source maintainer', roleTeam: 'Small team / startup', roleEnterprise: 'Enterprise R&D / Agent team', roleContributor: 'Contributor / reviewer', rolePlatform: 'Platform / API partner',
+        consent: 'I agree that Axiqra may contact me about early access, team trials, or partnership conversations. This is not authorization to publish, train on, or commercially use my Cases.',
+        submit: 'Join early access', submitting: 'Submitting...',
+        errName: 'Please enter your name.', errEmail: 'Please enter a valid email.', errRole: 'Please select your role.', errConsent: 'Please confirm early access contact authorization.',
+        submitFail: 'Submission failed. Please try again later.', networkFail: 'Network error. Please try again later.', submitOk: 'You are on the early access list.', submitDuplicate: 'This email is already on the early access list.'
+      },
+      zh: {
+        title: 'Axiqra - 面向互联网的工程方案记忆层',
+        metaDescription: 'Axiqra 是面向 AI 编程工具、开发者和团队的工程 Solution 记忆层：任务前检索真实工程记忆，任务后写回完整工程轨迹。',
+        mobileMenu: '菜单', close: '关闭',
+        navMemory: '记忆层', navSolutions: '方案', navTrust: '可信度', navEarly: '早期访问', navJoin: '加入候补',
+        heroLabel: '面向互联网开发者的工程方案记忆层',
+        heroLine1: '工程记忆', heroLine2: '要能被 AI', heroLine3: '真正调用。',
+        heroCopy: 'Axiqra 将真实工程任务、轨迹、案例、证据、适用边界和反馈，沉淀为 AI 编程工具、开发者和团队可复用的 Solution 网络。',
+        heroPrimary: '申请早期访问', heroSecondary: '查看 Solution 网络',
+        signalBeforeTitle: '工程任务之前', signalBeforeText: 'Agent 先检索 Solution、Case、失败路径、适用边界和风险提示，再开始行动。',
+        signalAfterTitle: '工程任务之后', signalAfterText: '工程轨迹经确认后成为 Project Case，授权和审核后再进入 Public Case 或 Solution。',
+        pathPersonal: '个人', pathPersonalTitle: '给一个开发者。', pathPersonalText: '不用在每次 AI 会话里反复解释同一套技术栈、环境、决策路径、适用边界和验证标准。',
+        pathTeam: '团队', pathTeamTitle: '给协作团队。', pathTeamText: '把重复工程任务、团队约定、评审经验和真实反馈变成共享工程记忆。',
+        pathEnterprise: '企业', pathEnterpriseTitle: '给企业场景。', pathEnterpriseText: '保留私有空间、脱敏、授权、审计和风险评估路径。',
+        howKicker: '工作方式', howTitle: '一条轨迹进入。整个 Solution 网络变强。', howLead: 'Axiqra 将任务前检索、执行、工程轨迹写回、审核和反馈连接成工程记忆循环。',
+        step1Title: '检索', step1Text: 'AI 在执行前检索工程方案、公开案例、项目案例和候选种子。',
+        step2Title: '应用', step2Text: 'AI 或开发者带着证据、适用边界、验证方式、风险和回滚说明应用候选 Solution。',
+        step3Title: '写回', step3Text: '用户确认后，工程轨迹沉淀为项目案例。',
+        step4Title: '演进', step4Text: '成功、失败、部分成功和不适用反馈会持续影响可信度与适用范围。',
+        productKicker: '产品', productTitle: '不是另一个编辑器。而是现有工具背后的工程方案记忆层。', productLead: 'Axiqra 为现有 AI 编程工具、开发者和团队提供可检索、可验证、可治理的工程记忆。',
+        traceTitle: '工程轨迹包', traceText: '记录正向路径、反向路径、决策、证据、回滚和演进。真实工程任务留下的不只是结果，还有判断过程。',
+        traceCore: '工程轨迹包', traceCoreSub: 'Case 输入', traceForward: '正向路径', traceReverse: '反向路径', traceDecision: '决策', traceEvidence: '证据', traceRollback: '回滚', traceEvolution: '演进', traceCaption: '用户确认后进入复用，复用前经过审核。',
+        projectCaseTitle: '项目案例', projectCaseText: '默认私有。把真实工程过程存放在个人、团队或企业空间内。',
+        publicCaseTitle: '公开案例', publicCaseText: '经过脱敏和审批。帮助开发者学习真实调试路径。',
+        solutionTitle: '工程方案', solutionText: '可被 Agent 调用。包含适用边界、证据、风险、验证和反馈的可演进方案单元。',
+        exampleKicker: '方案示例', exampleTitle: '一个真实工程案例，变成可复用的 Solution 记忆。',
+        exampleCardTitle: '不只是最终答案。', exampleCardText: 'Axiqra 会保留问题现场、错误假设、证据链、适用边界、验证路径和反馈，让工程答案真正可复用。',
+        tabAI: 'AI 视角', tabHuman: '人工视角', tabCommands: '命令', tabPrompt: '提示词',
+        aiViewTitle: 'AI 执行视角', aiViewText: '检查应用容器是否把 Redis 指向 localhost。先确认服务名和网络，再考虑修改 Redis 绑定或保护模式。',
+        aiCode: '方案：docker-compose.redis-localhost\n检查：SPRING_DATA_REDIS_HOST 应使用服务名，例如 redis\n验证：docker compose logs app && docker compose exec app getent hosts redis\n回滚：恢复原环境变量文件或 compose 覆盖文件',
+        humanViewTitle: '人工学习视角', humanViewText: 'Public Case 不停在最终答案。它展示问题现场、为什么 localhost 很容易造成误判、哪些检查排除了 Redis 本身、证据链如何指向容器网络，以及这套判断如何迁移到另一套技术栈。',
+        openCase: '查看 Public Case',
+        caseModalKicker: 'Public Case', caseModalTitle: 'Docker Compose 连接 Redis：为什么 localhost 会误导判断。', caseModalLead: '给开发者阅读的真实工程案例：不是捷径答案，而是一个可复用 Solution 背后的判断路径。',
+        caseMetaStack: 'Docker Compose', caseMetaMode: '学习解释模式', caseMetaRisk: '低风险示例',
+        caseSceneTitle: '问题现场', caseSceneText: '应用运行在一个容器里，Redis 运行在另一个容器里。应用报告 Redis 无法连接，但 Redis 服务本身看起来是健康的。',
+        caseTrapTitle: '常见误判', caseTrapText: '开发者可能先去修改 Redis bind 或 protected-mode。可是在这个场景里，localhost 指回应用容器自身，这条路径会浪费排查时间。',
+        caseEvidenceTitle: '证据链', caseEvidence1: '确认两个服务处在同一个 Compose 网络中。', caseEvidence2: '在应用容器内部解析 Redis 服务名。', caseEvidence3: '先检查环境变量，再考虑修改 Redis 安全配置。',
+        casePathTitle: '方案路径', casePath1: '使用 Compose 服务名作为 host，例如 redis。', casePath2: '通过日志、DNS 解析和重建应用容器完成验证。', casePath3: '通过恢复旧环境变量文件或 override 保留简单回滚路径。',
+        caseLearnTitle: '开发者真正学到什么', caseLearnText: '可复用的经验不是“把 host 改成 redis”，而是如何从运行边界推理到服务发现，如何避开错误方向，以及如何判断同一个 Solution 是否适用于另一套技术栈。',
+        commandsTitle: '命令', copy: '复制', copied: '已复制', copyFailed: '复制失败',
+        promptTitle: '提示词',
+        promptCode: '用 Axiqra 的工程方案模式处理一个 Docker Compose Redis 连通性任务：\n1. 先检索匹配的 Solution、Case、失败路径和适用边界。\n2. 检查应用容器是否把 Redis 指向 localhost。\n3. 检查 compose 服务名、网络和环境变量。\n4. 给出变更、验证命令、风险说明和回滚路径。\n5. 任务完成后准备工程轨迹包。',
+        trustKicker: '可信度', trustTitle: '可信度不是点赞按钮。', trustLead: '验证等级、样本量、证据质量、适用范围、风险和反馈会分开呈现。高风险任务仍需人工确认。',
+        l0Title: '草稿', l0Text: '没有已验证工程上下文，不建议自动给 Agent 使用。',
+        l1Title: '用户确认', l1Text: '至少有一个真实项目案例被确认有效。',
+        l2Title: '证据支撑', l2Text: '包含日志、测试、CI、部署、截图、PR/Issue 或企业验证。',
+        l3Title: '可复现', l3Text: '更多独立场景和真实反馈会推动升级、复审或降级。',
+        waitKicker: '早期访问', waitTitle: '带着你的真实工程工作流加入。', waitLead: '告诉我们你的使用场景。我们会优先邀请 AI 编程工具用户、开发者、维护者、建设工程记忆的团队、企业 Agent 团队，以及有真实工程案例的贡献者。',
+        formName: '姓名', formNamePh: '你的姓名或称呼', formEmail: '邮箱', formCompany: '公司或团队', formCompanyPh: '可选',
+        formRole: '身份', formRolePh: '请选择', formUse: '使用场景', formUsePh: '例如：让 Codex 在工程任务前先检索历史 Solution，任务后写回工程轨迹。',
+        rolePersonal: '个人开发者', roleAITool: 'AI 工具用户', roleOSS: '开源维护者', roleTeam: '小团队 / 初创团队', roleEnterprise: '企业研发 / Agent 团队', roleContributor: '贡献者 / 审核者', rolePlatform: '平台 / API 合作',
+        consent: '我同意 Axiqra 因早期访问、团队试用或合作沟通联系我。这不代表授权发布、训练或商业使用我的案例。',
+        submit: '申请早期访问', submitting: '提交中...',
+        errName: '请填写姓名或称呼。', errEmail: '请填写有效邮箱。', errRole: '请选择你的身份。', errConsent: '请确认早期访问联系授权。',
+        submitFail: '提交失败，请稍后再试。', networkFail: '网络异常，请稍后再试。', submitOk: '已加入早期访问候补名单。', submitDuplicate: '这个邮箱已经在候补名单里。'
+      }
+    };
+    let currentLang = localStorage.getItem('axiqra-lang') || 'en';
+    function t(key) {
+      return i18n[currentLang]?.[key] || i18n.en[key] || key;
+    }
+    function setLang(lang) {
+      currentLang = i18n[lang] ? lang : 'en';
+      localStorage.setItem('axiqra-lang', currentLang);
+      document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+      document.title = t('title');
+      document.querySelector('meta[name="description"]')?.setAttribute('content', t('metaDescription'));
+      document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('metaDescription'));
+      mobileToggle?.setAttribute('aria-label', t('mobileMenu'));
+      document.querySelectorAll('[data-modal-close]').forEach((button) => button.setAttribute('aria-label', t('close')));
+      document.querySelectorAll('[data-i18n]').forEach((node) => {
+        node.textContent = t(node.dataset.i18n);
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+        node.setAttribute('placeholder', t(node.dataset.i18nPlaceholder));
+      });
+      document.querySelectorAll('[data-lang]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.lang === currentLang);
+      });
+      if (!submit?.disabled) submit.textContent = t('submit');
+    }
+    const mobileToggle = document.querySelector('.mobile-toggle');
+    const mobileMenu = document.querySelector('#mobile-menu');
+    mobileToggle?.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('open');
+      mobileToggle.setAttribute('aria-expanded', String(open));
+    });
+    mobileMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      mobileToggle.setAttribute('aria-expanded', 'false');
+    }));
+    document.querySelectorAll('[role="tab"]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const tabId = button.dataset.tab;
+        const tabs = button.closest('.tabs');
+        tabs.querySelectorAll('[role="tab"]').forEach((tab) => tab.setAttribute('aria-selected', String(tab === button)));
+        tabs.querySelectorAll('.tabpanel').forEach((panel) => panel.classList.toggle('active', panel.id === tabId));
+      });
+    });
+    document.querySelectorAll('[data-copy]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const target = document.querySelector(button.dataset.copy);
+        const text = target?.innerText || '';
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = t('copied');
+        } catch {
+          button.textContent = t('copyFailed');
+        }
+        setTimeout(() => { button.textContent = t('copy'); }, 1400);
+      });
+    });
+    document.querySelectorAll('[data-lang]').forEach((button) => {
+      button.addEventListener('click', () => setLang(button.dataset.lang));
+    });
+    function closeModal(modal) {
+      modal?.classList.remove('open');
+      modal?.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    document.querySelectorAll('[data-modal-open]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const modal = document.querySelector(`#${button.dataset.modalOpen}`);
+        modal?.classList.add('open');
+        modal?.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        modal?.querySelector('.modal-panel')?.focus();
+      });
+    });
+    document.querySelectorAll('.modal').forEach((modal) => {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal || event.target.closest('[data-modal-close]')) closeModal(modal);
+      });
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') document.querySelectorAll('.modal.open').forEach(closeModal);
+    });
+    const form = document.querySelector('#waitlist-form');
+    const message = document.querySelector('#form-message');
+    const submit = document.querySelector('#submit-btn');
+    const emailRe = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    let submitting = false;
+    function setMessage(text, type) {
+      message.textContent = text;
+      message.className = `message ${type || ''}`;
+    }
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (submitting) return;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const payload = {
+        name: (data.name || '').trim(),
+        email: (data.email || '').trim(),
+        company: (data.company || '').trim(),
+        role: data.role || '',
+        use_case: (data.use_case || '').trim(),
+        website: (data.website || '').trim(),
+        consent: Boolean(data.consent),
+        source: 'axiqra-bilingual-homepage'
+      };
+      if (!payload.name) return setMessage(t('errName'), 'err');
+      if (!emailRe.test(payload.email)) return setMessage(t('errEmail'), 'err');
+      if (!payload.role) return setMessage(t('errRole'), 'err');
+      if (!payload.consent) return setMessage(t('errConsent'), 'err');
+      submitting = true;
+      submit.disabled = true;
+      submit.textContent = t('submitting');
+      setMessage('', '');
+      try {
+        const res = await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok || !body.ok) throw new Error(body.message || t('submitFail'));
+        setMessage(body.duplicate ? t('submitDuplicate') : t('submitOk'), 'ok');
+        if (!body.duplicate) form.reset();
+      } catch (error) {
+        setMessage(error.message || t('networkFail'), 'err');
+      } finally {
+        submitting = false;
+        submit.disabled = false;
+        submit.textContent = t('submit');
+      }
+    });
+    setLang(currentLang);
+  </script>
+</body>
+</html>

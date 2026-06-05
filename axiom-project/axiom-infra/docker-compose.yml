@@ -136,21 +136,23 @@ services:
     restart: unless-stopped
 
   # -------------------- 前端 Web 服务 --------------------
-  axiqra_frontend:
-    build:
-      context: ../axiom-frontend
-      dockerfile: Dockerfile
-    container_name: axiqra_frontend
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./docker/nginx/certs:/etc/nginx/certs:ro
-    depends_on:
-      - axiqra_core
-    networks:
-      - axiqra_internal_net
-    restart: unless-stopped
+  # 前端（官网）由 axiom-project/website/docker-compose.yml 提供
+  # axiom-infra 仅负责后端基础设施（数据库、缓存、对象存储）
+  # axiqra_frontend:
+  #   build:
+  #     context: ../axiom-frontend
+  #     dockerfile: Dockerfile
+  #   container_name: axiqra_frontend
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./docker/nginx/certs:/etc/nginx/certs:ro
+  #   depends_on:
+  #     - axiqra_core
+  #   networks:
+  #     - axiqra_internal_net
+  #   restart: unless-stopped
 
 networks:
   axiqra_internal_net:

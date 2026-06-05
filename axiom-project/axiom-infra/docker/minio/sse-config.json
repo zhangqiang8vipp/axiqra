@@ -1,0 +1,10 @@
+# axiom-project/axiom-infra/docker/minio/sse-config.json
+# MinIO SSE-S3 服务端加密配置（每个对象独立密钥）
+{
+  "keys": [
+    {
+      "algorithm": "AES256",
+      "key": "${MINIO_SSE_S3_KEY}"
+    }
+  ]
+}
