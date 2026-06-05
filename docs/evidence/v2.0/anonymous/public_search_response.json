@@ -1,0 +1,26 @@
+{
+  "request_id": "req_v20_anon_public_search",
+  "http_status": 200,
+  "subject_key": "ANON",
+  "surface": "public_solution_network",
+  "query": "Next.js auth callback error",
+  "allowed_scope": ["public_space_desensitized"],
+  "denied_scope": ["personal_space", "team_space", "enterprise_space", "project_case", "private_trace", "mcp_search"],
+  "result_count": 2,
+  "results": [
+    {
+      "type": "Public Case",
+      "visibility": "public",
+      "desensitized": true,
+      "title": "Next.js OAuth callback returns 400 after redirect"
+    },
+    {
+      "type": "Solution",
+      "visibility": "public",
+      "desensitized": true,
+      "title": "Normalize callback URL and provider state before retry"
+    }
+  ],
+  "login_cta_visible": true,
+  "mcp_available": false
+}

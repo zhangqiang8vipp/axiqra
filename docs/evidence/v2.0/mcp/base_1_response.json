@@ -1,0 +1,15 @@
+{
+  "request_id": "req_v20_mcp_base_001",
+  "http_status": 200,
+  "tool": "axiqra.search_before_act",
+  "subject_key": "BASE_USER",
+  "quota_window": "day",
+  "quota_limit": 10,
+  "quota_used": 1,
+  "quota_remaining": 9,
+  "reset_at": "2026-06-06T00:00:00+08:00",
+  "error_code": null,
+  "no_recall_performed": false,
+  "result_scope": "base + own + public + granted -> ABAC filter",
+  "audit_event": "mcp.search.quota_checked"
+}

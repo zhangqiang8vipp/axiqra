@@ -1,0 +1,51 @@
+{
+  "version": "v2.0",
+  "tool": "axiqra.search_before_act",
+  "default_quota_policy": {
+    "quota_window": "day",
+    "quota_limit": 10,
+    "timezone_policy": "tenant_default_or_user_home_timezone",
+    "ordinary_authenticated_user": "10 searches per day",
+    "anonymous_user": "no_mcp_token",
+    "advanced_identity": "no automatic bypass"
+  },
+  "cases": [
+    {
+      "case_id": "MCP-BASE-001",
+      "subject_key": "BASE_USER",
+      "call_number": 1,
+      "expected_http_status": 200,
+      "expected_error_code": null,
+      "expected_quota_remaining": 9,
+      "expected_recall_performed": true
+    },
+    {
+      "case_id": "MCP-BASE-010",
+      "subject_key": "BASE_USER",
+      "call_number": 10,
+      "expected_http_status": 200,
+      "expected_error_code": null,
+      "expected_quota_remaining": 0,
+      "expected_recall_performed": true
+    },
+    {
+      "case_id": "MCP-BASE-011",
+      "subject_key": "BASE_USER",
+      "call_number": 11,
+      "expected_http_status": 429,
+      "expected_error_code": "QUOTA_LIMITED",
+      "expected_quota_remaining": 0,
+      "expected_recall_performed": false
+    },
+    {
+      "case_id": "MCP-NO-SCOPE",
+      "subject_key": "BASE_USER",
+      "call_number": 1,
+      "token_scope": [],
+      "expected_http_status": 403,
+      "expected_error_code": "SCOPE_DENIED",
+      "expected_quota_remaining": null,
+      "expected_recall_performed": false
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "request_id": "req_v20_anon_private_isolation",
+  "http_status": 200,
+  "subject_key": "ANON",
+  "surface": "public_case_search",
+  "query": "enterprise-private-seed-title",
+  "result_count": 0,
+  "private_title_leaked": false,
+  "space_name_leaked": false,
+  "trace_id_leaked": false,
+  "mcp_available": false,
+  "login_cta_visible": true,
+  "fixed_rule": "未登录搜索必须先按 Public Space 公开脱敏范围过滤，再召回。"
+}
