@@ -45,20 +45,26 @@ jobs:
         id: pr_info
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
         run: |
           if [ -n "$PR_NUMBER" ]; then
             pr_data=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER --jq '{title: .title, body: .body, base: .base.ref, head: .head.ref, author: .user.login}')
-            echo "title=$(echo $pr_data | jq -r '.title')" >> $GITHUB_OUTPUT
-            echo "base=$(echo $pr_data | jq -r '.base')" >> $GITHUB_OUTPUT
-            echo "author=$(echo $pr_data | jq -r '.author')" >> $GITHUB_OUTPUT
+            echo "title<<EOF" >> $GITHUB_OUTPUT
+            echo "$pr_data" | jq -r '.title' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "base<<EOF" >> $GITHUB_OUTPUT
+            echo "$pr_data" | jq -r '.base' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "author<<EOF" >> $GITHUB_OUTPUT
+            echo "$pr_data" | jq -r '.author' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
 
       - name: Get PR diff
         id: diff
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
         run: |
           if [ -n "$PR_NUMBER" ]; then
             gh pr diff $PR_NUMBER > pr_changes.diff
@@ -69,7 +75,8 @@ jobs:
         id: review
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+          REVIEW_BODY: ${{ steps.review.outputs.review_body }}
         run: |
           if [ -z "$OPENROUTER_API_KEY" ]; then
             echo "::warning::OPENROUTER_API_KEY secret not set. Skipping OpenRouter review."
@@ -81,8 +88,58 @@ jobs:
           BASE="${{ steps.pr_info.outputs.base }}"
           DIFF_SIZE="${{ steps.diff.outputs.diff_size }}"
 
-          # Read diff content (truncated for model context window)
-          DIFF_CONTENT=$(head -c 120000 pr_changes.diff 2>/dev/null || cat pr_changes.diff)
+          # Read diff content, validated as UTF-8, truncated to 120000 chars
+          DIFF_CONTENT=$(head -c 120000 pr_changes.diff | iconv -f utf-8 -t utf-8 -c 2>/dev/null | cut -c1-120000)
+          if [ -z "$DIFF_CONTENT" ]; then
+            DIFF_CONTENT=$(head -c 120000 pr_changes.diff)
+          fi
+
+          USER_CONTENT="Review the following PR changes.
+
+PR: $PR_INFO
+Author: $AUTHOR
+Base branch: $BASE
+Diff size: $DIFF_SIZE lines
+
+## Review Focus
+1. Security: hardcoded secrets, API key leaks, injection risks
+2. MCP protocol compliance: quota limits, error handling
+3. Error handling: async try/catch, proper HTTP status codes
+4. Test coverage: new code has corresponding tests
+5. Code quality: ESM imports, naming, error context
+6. Workflow changes: trigger paths, permissions, secrets usage
+
+## Output Format
+## Summary
+[One paragraph overview]
+
+## Critical Issues (must fix)
+- [file:line] - issue description
+
+## Suggestions (recommended)
+- [file:line] - suggestion description
+
+## Positive Highlights
+- What was done well
+
+---
+\`\`\`diff
+$DIFF_CONTENT
+\`\`\`"
+
+          PAYLOAD=$(jq -n \
+            --arg model "openrouter/free" \
+            --argjson max_tokens 2048 \
+            --arg system "You are an expert code reviewer for the Axiqra project (a knowledge engineering and memory system). Provide concise, actionable feedback." \
+            --arg user "$USER_CONTENT" \
+            '{
+              model: $model,
+              max_tokens: $max_tokens,
+              messages: [
+                {role: "system", content: $system},
+                {role: "user", content: $user}
+              ]
+            }')
 
           RESPONSE=$(curl -s -X POST \
             "https://openrouter.ai/api/v1/chat/completions" \
@@ -90,20 +147,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "HTTP-Referer: https://github.com/zhangqiang8vipp/axiqra" \
             -H "X-Title: Axiqra Code Review" \
-            -d "{
-              \"model\": \"openrouter/free\",
-              \"max_tokens\": 2048,
-              \"messages\": [
-                {
-                  \"role\": \"system\",
-                  \"content\": \"You are an expert code reviewer for the Axiqra project (a knowledge engineering and memory system). Provide concise, actionable feedback.\"
-                },
-                {
-                  \"role\": \"user\",
-                  \"content\": \"Review the following PR changes.\n\nPR: $PR_INFO\nAuthor: $AUTHOR\nBase branch: $BASE\nDiff size: $DIFF_SIZE lines\n\n## Review Focus\n1. Security: hardcoded secrets, API key leaks, injection risks\n2. MCP protocol compliance: quota limits, error handling\n3. Error handling: async try/catch, proper HTTP status codes\n4. Test coverage: new code has corresponding tests\n5. Code quality: ESM imports, naming, error context\n6. Workflow changes: trigger paths, permissions, secrets usage\n\n## Output Format\n## Summary\n[One paragraph overview]\n\n## Critical Issues (must fix)\n- [file:line] - issue description\n\n## Suggestions (recommended)\n- [file:line] - suggestion description\n\n## Positive Highlights\n- What was done well\n\n---\n\`\`\`diff\n$DIFF_CONTENT\n\`\`\`\"
-                }
-              ]
-            }")
+            -d "$PAYLOAD")
 
           REVIEW=$(echo $RESPONSE | jq -r '.choices[0].message.content // empty')
 
@@ -119,12 +163,14 @@ jobs:
       - name: Post review comment
         if: steps.review.outputs.review_body != ''
         uses: actions/github-script@v7
+        env:
+          REVIEW_BODY: ${{ steps.review.outputs.review_body }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const reviewBody = `${{ steps.review.outputs.review_body }}`;
-            const prNumber = context.payload.pull_request?.number || context.inputs.pr_number;
-
+            const reviewBody = process.env.REVIEW_BODY;
+            const prNumber = parseInt(process.env.PR_NUMBER, 10);
             if (prNumber) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
