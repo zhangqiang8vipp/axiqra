@@ -5,6 +5,7 @@ logs/
 *.local.json
 __pycache__/
 *.py[cod]
+.cursor/
 宣传/.claude/
 宣传/logs/
 宣传/data/*.csv
