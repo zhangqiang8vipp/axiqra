@@ -139,6 +139,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     private List<FeedbackDetailVO> toDetailVOList(List<FeedbackEntity> entities) {
+        if (entities == null) {
+            return List.of();
+        }
         List<FeedbackDetailVO> list = new ArrayList<>();
         for (FeedbackEntity entity : entities) {
             list.add(toDetailVO(entity));

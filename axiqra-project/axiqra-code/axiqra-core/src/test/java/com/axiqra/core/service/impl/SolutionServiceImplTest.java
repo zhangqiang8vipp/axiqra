@@ -25,6 +25,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -148,24 +150,24 @@ class SolutionServiceImplTest {
         when(solutionMapper.selectActiveById(10L)).thenReturn(solution);
         when(rbacService.isMember(1L, 100L)).thenReturn(true);
         when(solutionVersionMapper.selectBySolutionId(10L)).thenReturn(List.of(version));
+        FeedbackMapper.FeedbackStatRow workedRow = mock(FeedbackMapper.FeedbackStatRow.class);
+        org.mockito.Mockito.doReturn(FeedbackType.WORKED.getCode()).when(workedRow).getFeedbackType();
+        org.mockito.Mockito.doReturn(2L).when(workedRow).getCount();
+
+        FeedbackMapper.FeedbackStatRow failedRow = mock(FeedbackMapper.FeedbackStatRow.class);
+        org.mockito.Mockito.doReturn(FeedbackType.FAILED.getCode()).when(failedRow).getFeedbackType();
+        org.mockito.Mockito.doReturn(1L).when(failedRow).getCount();
+
+        FeedbackMapper.FeedbackStatRow unknownRow = mock(FeedbackMapper.FeedbackStatRow.class);
+        lenient().doReturn("unknown").when(unknownRow).getFeedbackType();
+        lenient().doReturn(7L).when(unknownRow).getCount();
+
+        FeedbackMapper.FeedbackStatRow notApplicableRow = mock(FeedbackMapper.FeedbackStatRow.class);
+        org.mockito.Mockito.doReturn(FeedbackType.NOT_APPLICABLE.getCode()).when(notApplicableRow).getFeedbackType();
+        org.mockito.Mockito.doReturn(null).when(notApplicableRow).getCount();
+
         when(feedbackMapper.selectFeedbackStatsBySolutionId(10L)).thenReturn(List.of(
-                new FeedbackMapper.FeedbackStatRow() {
-                    @Override public String getFeedbackType() { return FeedbackType.WORKED.getCode(); }
-                    @Override public Long getCount() { return 2L; }
-                },
-                new FeedbackMapper.FeedbackStatRow() {
-                    @Override public String getFeedbackType() { return FeedbackType.FAILED.getCode(); }
-                    @Override public Long getCount() { return 1L; }
-                },
-                new FeedbackMapper.FeedbackStatRow() {
-                    @Override public String getFeedbackType() { return "unknown"; }
-                    @Override public Long getCount() { return 7L; }
-                },
-                new FeedbackMapper.FeedbackStatRow() {
-                    @Override public String getFeedbackType() { return FeedbackType.NOT_APPLICABLE.getCode(); }
-                    @Override public Long getCount() { return null; }
-                }
-        ));
+                workedRow, failedRow, unknownRow, notApplicableRow));
 
         var result = solutionService.getDetail(1L, 10L);
 

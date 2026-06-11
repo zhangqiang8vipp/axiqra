@@ -117,7 +117,13 @@ public class InvocationServiceImpl implements InvocationService {
         FeedbackService feedbackService = feedbackServiceProvider.getIfAvailable();
         if (feedbackService == null) {
             log.warn("FeedbackService 未就绪，返回空统计: solutionId={}", solutionId);
-            return SolutionFeedbackStatsVO.builder().totalCount(0L).build();
+            return SolutionFeedbackStatsVO.builder()
+                    .totalCount(0L)
+                    .workedCount(0L)
+                    .partialCount(0L)
+                    .failedCount(0L)
+                    .notApplicableCount(0L)
+                    .build();
         }
         return feedbackService.getSolutionFeedbackStats(solutionId);
     }

@@ -63,6 +63,9 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public ReviewDetailVO appeal(Long userId, Long reviewId, String appealContent) {
+        if (appealContent == null || appealContent.isBlank()) {
+            throw new BizException(ErrorCode.PARAM_INVALID, "申诉内容不能为空");
+        }
         ReviewEntity entity = reviewMapper.selectById(reviewId);
         if (entity == null || entity.isDeleted()) {
             throw new BizException(ErrorCode.RESOURCE_NOT_FOUND, "审核任务不存在");
@@ -74,7 +77,10 @@ public class ReviewServiceImpl implements ReviewService {
         entity.setStatus(ReviewResult.APPEAL_IN_PROGRESS);
         entity.setAppealContent(appealContent);
         entity.setVersion(entity.getVersion() + 1);
-        reviewMapper.update(entity);
+        int rows = reviewMapper.update(entity);
+        if (rows == 0) {
+            throw new BizException(ErrorCode.STATUS_TRANSITION_INVALID, "乐观锁冲突，申诉状态已变更");
+        }
 
         log.info("提交申诉: reviewId={}, userId={}", reviewId, userId);
         return toDetailVO(entity);
@@ -104,7 +110,10 @@ public class ReviewServiceImpl implements ReviewService {
         entity.setReasonCode(reasonCode);
         entity.setNotes(notes);
         entity.setVersion(entity.getVersion() + 1);
-        reviewMapper.update(entity);
+        int rows = reviewMapper.update(entity);
+        if (rows == 0) {
+            throw new BizException(ErrorCode.STATUS_TRANSITION_INVALID, "乐观锁冲突，审核状态已变更");
+        }
         return entity;
     }
 

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -150,18 +150,26 @@ class FeedbackServiceImplTest {
     }
 
     @Test
+    @DisplayName("toDetailVOList 传入 null 应返回空列表")
+    void shouldReturnEmptyListWhenNull() {
+        List<FeedbackDetailVO> result = feedbackService.listFeedbacks(1L, "unknown", 77L);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     @DisplayName("getSolutionFeedbackStats 应聚合各类型统计")
     void shouldAggregateFeedbackStats() {
-        var row1 = new FeedbackMapper.FeedbackStatRow() {
-            @Override public String getFeedbackType() { return "worked"; }
-            @Override public Long getCount() { return 3L; }
-        };
-        var row2 = new FeedbackMapper.FeedbackStatRow() {
-            @Override public String getFeedbackType() { return "failed"; }
-            @Override public Long getCount() { return 2L; }
-        };
+        FeedbackMapper.FeedbackStatRow workedRow = mock(FeedbackMapper.FeedbackStatRow.class);
+        org.mockito.Mockito.doReturn("worked").when(workedRow).getFeedbackType();
+        org.mockito.Mockito.doReturn(3L).when(workedRow).getCount();
+
+        FeedbackMapper.FeedbackStatRow failedRow = mock(FeedbackMapper.FeedbackStatRow.class);
+        org.mockito.Mockito.doReturn("failed").when(failedRow).getFeedbackType();
+        org.mockito.Mockito.doReturn(2L).when(failedRow).getCount();
+
         when(feedbackMapper.selectFeedbackStatsBySolutionId(77L))
-                .thenReturn(List.of(row1, row2));
+                .thenReturn(List.of(workedRow, failedRow));
 
         SolutionFeedbackStatsVO result = feedbackService.getSolutionFeedbackStats(77L);
 
@@ -169,6 +177,13 @@ class FeedbackServiceImplTest {
         assertEquals(2L, result.getFailedCount());
         assertEquals(5L, result.getTotalCount());
         assertEquals(0L, result.getPartialCount());
+    }
+
+    private FeedbackMapper.FeedbackStatRow mockStatRow(String type, Long count) {
+        FeedbackMapper.FeedbackStatRow row = mock(FeedbackMapper.FeedbackStatRow.class);
+        org.mockito.Mockito.doReturn(type).when(row).getFeedbackType();
+        org.mockito.Mockito.doReturn(count).when(row).getCount();
+        return row;
     }
 
     private FeedbackEntity feedbackEntity(Long id, Long invocationId) {

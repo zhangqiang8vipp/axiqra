@@ -51,6 +51,7 @@ class ReviewServiceImplTest {
     void shouldApprove() {
         ReviewEntity entity = reviewEntity(10L, ReviewResult.PENDING);
         when(reviewMapper.selectById(10L)).thenReturn(entity);
+        when(reviewMapper.update(entity)).thenReturn(1);
 
         ReviewDetailVO result = reviewService.approve(1L, 10L, "CODE_OK", "LGTM");
 
@@ -67,6 +68,7 @@ class ReviewServiceImplTest {
     void shouldReject() {
         ReviewEntity entity = reviewEntity(10L, ReviewResult.PENDING);
         when(reviewMapper.selectById(10L)).thenReturn(entity);
+        when(reviewMapper.update(entity)).thenReturn(1);
 
         ReviewDetailVO result = reviewService.reject(1L, 10L, "RISK_HIGH", "R4 not allowed");
 
@@ -82,6 +84,7 @@ class ReviewServiceImplTest {
     void shouldQuarantine() {
         ReviewEntity entity = reviewEntity(10L, ReviewResult.PENDING);
         when(reviewMapper.selectById(10L)).thenReturn(entity);
+        when(reviewMapper.update(entity)).thenReturn(1);
 
         ReviewDetailVO result = reviewService.quarantine(1L, 10L, "QUARANTINE", "malicious content");
 
@@ -97,12 +100,14 @@ class ReviewServiceImplTest {
     void shouldAppeal() {
         ReviewEntity entity = reviewEntity(10L, ReviewResult.REJECTED);
         when(reviewMapper.selectById(10L)).thenReturn(entity);
+        when(reviewMapper.update(entity)).thenReturn(1);
 
         ReviewDetailVO result = reviewService.appeal(2L, 10L, "I disagree with rejection");
 
         assertNotNull(result);
         verify(reviewMapper).update(entity);
         assertEquals(ReviewResult.APPEAL_IN_PROGRESS, entity.getStatus());
+        assertEquals("I disagree with rejection", entity.getAppealContent());
     }
 
     @Test
@@ -112,9 +117,34 @@ class ReviewServiceImplTest {
         when(reviewMapper.selectById(10L)).thenReturn(entity);
 
         BizException ex = assertThrows(BizException.class,
-                () -> reviewService.appeal(2L, 10L, ""));
+                () -> reviewService.appeal(2L, 10L, "valid content"));
 
         assertEquals(ErrorCode.STATUS_TRANSITION_INVALID.getCode(), ex.getCode());
+    }
+
+    @Test
+    @DisplayName("申诉内容为空时应抛 PARAM_INVALID 异常")
+    void shouldThrowWhenAppealContentBlank() {
+        // blank 检查在 selectById 之前，不需要 mock mapper
+        BizException ex = assertThrows(BizException.class,
+                () -> reviewService.appeal(2L, 10L, ""));
+
+        assertEquals(ErrorCode.PARAM_INVALID.getCode(), ex.getCode());
+    }
+
+    @Test
+    @DisplayName("从 QUARANTINED 状态发起申诉应更新为 APPEAL_IN_PROGRESS")
+    void shouldAppealFromQuarantined() {
+        ReviewEntity entity = reviewEntity(10L, ReviewResult.QUARANTINED);
+        when(reviewMapper.selectById(10L)).thenReturn(entity);
+        when(reviewMapper.update(entity)).thenReturn(1);
+
+        ReviewDetailVO result = reviewService.appeal(2L, 10L, "I disagree with quarantine");
+
+        assertNotNull(result);
+        verify(reviewMapper).update(entity);
+        assertEquals(ReviewResult.APPEAL_IN_PROGRESS, entity.getStatus());
+        assertEquals("I disagree with quarantine", entity.getAppealContent());
     }
 
     @Test

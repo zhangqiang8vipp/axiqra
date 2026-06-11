@@ -70,6 +70,9 @@ public class ContributionServiceImpl implements ContributionService {
     }
 
     private List<ContributionSummaryVO.ContributionRecord> toRecordList(List<ContributionLedgerEntity> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return List.of();
+        }
         List<ContributionSummaryVO.ContributionRecord> list = new ArrayList<>();
         for (ContributionLedgerEntity entity : entities) {
             list.add(ContributionSummaryVO.ContributionRecord.builder()

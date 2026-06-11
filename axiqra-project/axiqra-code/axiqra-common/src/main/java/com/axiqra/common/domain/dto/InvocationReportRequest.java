@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @date 2026-06-11
  */
 @Data
+@NoArgsConstructor
 public class InvocationReportRequest {
 
     @NotBlank(message = "请求 ID 不能为空")

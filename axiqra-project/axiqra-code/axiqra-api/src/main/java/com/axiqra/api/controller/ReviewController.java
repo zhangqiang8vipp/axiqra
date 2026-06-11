@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -56,8 +58,8 @@ public class ReviewController {
     public ResponseEntity<ReviewDetailVO> approve(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId,
-            @RequestParam(required = false) String reasonCode,
-            @RequestParam(required = false) String notes) {
+            @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
+            @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
         ReviewDetailVO result = reviewService.approve(userId, reviewId, reasonCode, notes);
         return ResponseEntity.ok(result);
     }
@@ -68,8 +70,8 @@ public class ReviewController {
     public ResponseEntity<ReviewDetailVO> reject(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId,
-            @RequestParam(required = false) String reasonCode,
-            @RequestParam(required = false) String notes) {
+            @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
+            @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
         ReviewDetailVO result = reviewService.reject(userId, reviewId, reasonCode, notes);
         return ResponseEntity.ok(result);
     }
@@ -80,8 +82,8 @@ public class ReviewController {
     public ResponseEntity<ReviewDetailVO> quarantine(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId,
-            @RequestParam(required = false) String reasonCode,
-            @RequestParam(required = false) String notes) {
+            @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
+            @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
         ReviewDetailVO result = reviewService.quarantine(userId, reviewId, reasonCode, notes);
         return ResponseEntity.ok(result);
     }
@@ -92,7 +94,7 @@ public class ReviewController {
     public ResponseEntity<ReviewDetailVO> appeal(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId,
-            @RequestParam(required = false) String appealContent) {
+            @RequestParam @NotBlank(message = "申诉内容不能为空") @Size(max = 2000, message = "appealContent 长度不能超过 2000") String appealContent) {
         ReviewDetailVO result = reviewService.appeal(userId, reviewId, appealContent);
         return ResponseEntity.ok(result);
     }
