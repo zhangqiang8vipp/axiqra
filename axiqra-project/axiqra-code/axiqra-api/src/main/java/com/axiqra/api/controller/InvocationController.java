@@ -9,9 +9,11 @@ import com.axiqra.core.service.InvocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/invocations")
 @RequiredArgsConstructor
+@Validated
 public class InvocationController {
 
     private final InvocationService invocationService;
@@ -43,7 +46,7 @@ public class InvocationController {
     @RequireScope("connect:read")
     public ResponseEntity<ApiResponse<InvocationDetailVO>> getInvocationDetail(
             @RequestHeader("X-User-Id") Long userId,
-            @PathVariable Long invocationId) {
+            @PathVariable @Positive Long invocationId) {
         if (!invocationService.isUserAuthorized(userId, invocationId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.fail(403, "无权限查看该调用记录"));
         }
@@ -54,7 +57,7 @@ public class InvocationController {
     @Operation(summary = "获取指定 Solution 的反馈统计")
     @GetMapping("/solutions/{solutionId}/feedback-stats")
     @RequireScope("feedback:read")
-    public ResponseEntity<ApiResponse<SolutionFeedbackStatsVO>> getSolutionFeedbackStats(@PathVariable Long solutionId) {
+    public ResponseEntity<ApiResponse<SolutionFeedbackStatsVO>> getSolutionFeedbackStats(@PathVariable @Positive Long solutionId) {
         SolutionFeedbackStatsVO result = invocationService.getSolutionFeedbackStats(solutionId);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }

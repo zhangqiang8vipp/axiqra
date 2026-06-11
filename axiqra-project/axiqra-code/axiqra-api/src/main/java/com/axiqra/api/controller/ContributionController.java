@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +34,7 @@ public class ContributionController {
     @Operation(summary = "获取贡献汇总")
     @GetMapping("/users/{userId}/summary")
     @RequireScope("contribution:read")
-    public ResponseEntity<ApiResponse<ContributionSummaryVO>> getContributionSummary(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<ContributionSummaryVO>> getContributionSummary(@PathVariable @Positive Long userId) {
         ContributionSummaryVO result = contributionService.getContributionSummary(userId);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
@@ -42,7 +43,7 @@ public class ContributionController {
     @GetMapping("/users/{userId}/records")
     @RequireScope("contribution:read")
     public ResponseEntity<ApiResponse<List<ContributionSummaryVO.ContributionRecord>>> getContributionRecords(
-            @PathVariable Long userId,
+            @PathVariable @Positive Long userId,
             @RequestParam(defaultValue = "20") @Min(1) @Max(1000) int limit) {
         List<ContributionSummaryVO.ContributionRecord> result = contributionService.getContributionRecords(userId, limit);
         return ResponseEntity.ok(ApiResponse.ok(result));
