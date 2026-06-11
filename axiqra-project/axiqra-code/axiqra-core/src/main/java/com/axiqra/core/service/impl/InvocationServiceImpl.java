@@ -13,6 +13,7 @@ import com.axiqra.core.service.InvocationService;
 import com.axiqra.core.service.RateLimitService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,17 +42,8 @@ public class InvocationServiceImpl implements InvocationService {
     @Override
     @Transactional
     public InvocationDetailVO reportInvocation(Long userId, InvocationReportRequest request) {
-        // 检查幂等
-        InvocationEntity existing = invocationMapper.selectByRequestId(request.getRequestId());
-        if (existing != null) {
-            log.info("Invocation 已存在，幂等返回: requestId={}", request.getRequestId());
-            return toDetailVO(existing);
-        }
-
-        // 速率限制
         rateLimitService.checkOrThrow(userId, "invocation:report");
 
-        // 创建 Invocation 记录
         InvocationEntity entity = new InvocationEntity();
         entity.setRequestId(request.getRequestId());
         entity.setUserId(userId);
@@ -65,10 +57,15 @@ public class InvocationServiceImpl implements InvocationService {
         entity.setConfirmationObtained(request.getConfirmationObtained() != null ? request.getConfirmationObtained() : 0);
         entity.setResultType(request.getResultType());
 
-        invocationMapper.insert(entity);
-        log.info("Invocation 上报成功: id={}, requestId={}", entity.getId(), request.getRequestId());
+        try {
+            invocationMapper.insert(entity);
+            log.info("Invocation 上报成功: id={}, requestId={}", entity.getId(), request.getRequestId());
+        } catch (DataIntegrityViolationException ex) {
+            log.info("Invocation 已存在，幂等返回: requestId={}", request.getRequestId());
+            InvocationEntity existing = invocationMapper.selectByRequestId(request.getRequestId());
+            return toDetailVO(existing);
+        }
 
-        // 联动 Feedback：调用方感知失败则整体回滚，保持数据一致性
         if (request.getFeedbackContent() != null || (request.getEvidenceRefs() != null && !request.getEvidenceRefs().isEmpty())) {
             FeedbackService feedbackService = feedbackServiceProvider.getIfAvailable();
             if (feedbackService != null) {

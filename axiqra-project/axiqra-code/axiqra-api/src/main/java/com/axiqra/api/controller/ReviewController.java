@@ -2,6 +2,7 @@ package com.axiqra.api.controller;
 
 import com.axiqra.api.annotation.RequireScope;
 import com.axiqra.common.domain.vo.ReviewDetailVO;
+import com.axiqra.common.response.ApiResponse;
 import com.axiqra.core.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,68 +35,68 @@ public class ReviewController {
     @Operation(summary = "获取待审核队列")
     @GetMapping("/pending")
     @RequireScope("review:read")
-    public ResponseEntity<List<ReviewDetailVO>> getPendingReviews(
+    public ResponseEntity<ApiResponse<List<ReviewDetailVO>>> getPendingReviews(
             @RequestHeader("X-User-Id") Long userId,
             @RequestParam(defaultValue = "human") String queue,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit) {
         List<ReviewDetailVO> result = reviewService.getPendingReviews(userId, queue, limit);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @Operation(summary = "获取审核详情")
     @GetMapping("/{reviewId}")
     @RequireScope("review:read")
-    public ResponseEntity<ReviewDetailVO> getReviewDetail(
+    public ResponseEntity<ApiResponse<ReviewDetailVO>> getReviewDetail(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId) {
         ReviewDetailVO result = reviewService.getReviewDetail(userId, reviewId);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @Operation(summary = "审核通过")
     @PostMapping("/{reviewId}/approve")
     @RequireScope("review:write")
-    public ResponseEntity<ReviewDetailVO> approve(
+    public ResponseEntity<ApiResponse<ReviewDetailVO>> approve(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId,
             @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
             @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
         ReviewDetailVO result = reviewService.approve(userId, reviewId, reasonCode, notes);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @Operation(summary = "审核拒绝")
     @PostMapping("/{reviewId}/reject")
     @RequireScope("review:write")
-    public ResponseEntity<ReviewDetailVO> reject(
+    public ResponseEntity<ApiResponse<ReviewDetailVO>> reject(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId,
             @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
             @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
         ReviewDetailVO result = reviewService.reject(userId, reviewId, reasonCode, notes);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @Operation(summary = "隔离内容")
     @PostMapping("/{reviewId}/quarantine")
     @RequireScope("review:write")
-    public ResponseEntity<ReviewDetailVO> quarantine(
+    public ResponseEntity<ApiResponse<ReviewDetailVO>> quarantine(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId,
             @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
             @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
         ReviewDetailVO result = reviewService.quarantine(userId, reviewId, reasonCode, notes);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @Operation(summary = "申诉")
     @PostMapping("/{reviewId}/appeal")
     @RequireScope("review:write")
-    public ResponseEntity<ReviewDetailVO> appeal(
+    public ResponseEntity<ApiResponse<ReviewDetailVO>> appeal(
             @RequestHeader("X-User-Id") Long userId,
             @PathVariable Long reviewId,
             @RequestParam @NotBlank(message = "申诉内容不能为空") @Size(max = 2000, message = "appealContent 长度不能超过 2000") String appealContent) {
         ReviewDetailVO result = reviewService.appeal(userId, reviewId, appealContent);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 }

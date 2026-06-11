@@ -1,6 +1,7 @@
 package com.axiqra.api.controller;
 
 import com.axiqra.common.domain.vo.ToolModelLeaderboardVO;
+import com.axiqra.common.response.ApiResponse;
 import com.axiqra.core.service.ToolModelService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,9 +44,12 @@ class ToolModelControllerTest {
         var result = controller.getLeaderboard("global", null, null, 50);
 
         assertNotNull(result);
-        assertEquals(1, result.getBody().size());
-        assertEquals("cursor", result.getBody().get(0).getToolName());
-        assertEquals(new BigDecimal("95.5"), result.getBody().get(0).getSuccessRate7d());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(1, result.getBody().getData().size());
+        assertEquals("cursor", result.getBody().getData().get(0).getToolName());
+        assertEquals(new BigDecimal("95.5"), result.getBody().getData().get(0).getSuccessRate7d());
         verify(toolModelService).getLeaderboard("global", null, null, 50);
     }
 
@@ -62,7 +66,25 @@ class ToolModelControllerTest {
         var result = controller.getLeaderboard("public", null, "cursor", 50);
 
         assertNotNull(result);
-        assertEquals(1, result.getBody().size());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(1, result.getBody().getData().size());
         verify(toolModelService).getLeaderboard("public", null, "cursor", 50);
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/tool-models/leaderboard 返回空排行榜")
+    void getLeaderboardShouldReturnEmptyList() {
+        when(toolModelService.getLeaderboard("global", null, null, 50))
+                .thenReturn(List.of());
+
+        var result = controller.getLeaderboard("global", null, null, 50);
+
+        assertNotNull(result);
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(0, result.getBody().getData().size());
     }
 }

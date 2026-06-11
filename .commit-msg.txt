@@ -1,19 +1,9 @@
-fix(R7): resolve PR review issues from CodeRabbit, Codex, and Agnes
+fix: resolve remaining API review issues from GitHub Actions
 
-Code fixes:
-- ReviewEntity: add @Column for reasonCode, notes, appealContent
-- InvocationReportRequest: add @NoArgsConstructor for Jackson
-- ApplicationContextHolder: add synchronized guard + DCL for double-init prevention
-- ReviewController: add @NotBlank on appealContent, @Size(max) on reasonCode/notes/appealContent
-- ReviewServiceImpl: check rows==0 in loadAndValidateAndTransition and appeal(), add blank check for appealContent
-- InvocationServiceImpl: complete all counter fields in getSolutionFeedbackStats fallback
-- ContributionServiceImpl: add null/empty guard in toRecordList
-- FeedbackServiceImpl: add null guard in toDetailVOList
-
-Test fixes:
-- SolutionServiceImplTest: replace anonymous FeedbackStatRow with doReturn().when() mocks + lenient
-- FeedbackServiceImplTest: same mock pattern
-- ReviewServiceImplTest: add reviewMapper.update() stubs, add QUARANTINED->APPEAL path test, split blank-content test
-- FeedbackServiceImplTest: add toDetailVOList null check test case
-
-All 297 tests pass (199 core + 97 api + 1 start).
+- InvocationServiceImpl: use insert-first with unique-constraint catch
+  for idempotency, fixing check-then-insert race condition
+- All 5 controllers wrap responses in ApiResponse<>
+  (Feedback, Review, Contribution, ToolModel, Invocation)
+- 403 response body now includes ApiResponse.fail() instead of empty
+- Add boundary tests: empty list, zero counts, invalid request
+- Update controller/service tests to match new response patterns

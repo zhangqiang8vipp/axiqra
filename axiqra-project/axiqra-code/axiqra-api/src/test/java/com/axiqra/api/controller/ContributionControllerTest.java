@@ -1,6 +1,7 @@
 package com.axiqra.api.controller;
 
 import com.axiqra.common.domain.vo.ContributionSummaryVO;
+import com.axiqra.common.response.ApiResponse;
 import com.axiqra.core.service.ContributionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,8 +42,11 @@ class ContributionControllerTest {
         var result = controller.getContributionSummary(1L);
 
         assertNotNull(result);
-        assertEquals(120, result.getBody().getTotalPoints());
-        assertEquals(5, result.getBody().getTraceCount());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(120, result.getBody().getData().getTotalPoints());
+        assertEquals(5, result.getBody().getData().getTraceCount());
         verify(contributionService).getContributionSummary(1L);
     }
 
@@ -59,8 +63,25 @@ class ContributionControllerTest {
         var result = controller.getContributionRecords(1L, 20);
 
         assertNotNull(result);
-        assertEquals(1, result.getBody().size());
-        assertEquals("trace_created", result.getBody().get(0).getEventType());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(1, result.getBody().getData().size());
+        assertEquals("trace_created", result.getBody().getData().get(0).getEventType());
         verify(contributionService).getContributionRecords(1L, 20);
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/contributions/users/{id}/records 返回空列表")
+    void getRecordsShouldReturnEmptyList() {
+        when(contributionService.getContributionRecords(1L, 50)).thenReturn(List.of());
+
+        var result = controller.getContributionRecords(1L, 50);
+
+        assertNotNull(result);
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(0, result.getBody().getData().size());
     }
 }

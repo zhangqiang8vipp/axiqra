@@ -17,13 +17,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
-
-import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -45,10 +45,12 @@ class InvocationServiceImplTest {
     private InvocationServiceImpl invocationService;
 
     @Test
-    @DisplayName("重复 requestId 应幂等返回已有记录")
+    @DisplayName("重复 requestId 应幂等返回已有记录（insert 抛唯一约束异常）")
     void shouldReturnExistingWhenRequestIdDuplicate() {
         InvocationEntity existing = invocationEntity(10L, "req-1");
         when(invocationMapper.selectByRequestId("req-1")).thenReturn(existing);
+        when(invocationMapper.insert(any(InvocationEntity.class)))
+                .thenThrow(new DataIntegrityViolationException("Duplicate entry"));
 
         InvocationServiceImpl service = new InvocationServiceImpl(invocationMapper, rateLimitService, feedbackServiceProvider);
 
@@ -64,16 +66,13 @@ class InvocationServiceImplTest {
 
         assertNotNull(result);
         assertEquals(10L, result.getId());
-        verify(invocationMapper, never()).insert(any());
-        verify(rateLimitService, never()).checkOrThrow(any(), any());
+        verify(invocationMapper).insert(any(InvocationEntity.class));
+        verify(rateLimitService).checkOrThrow(1L, "invocation:report");
     }
 
     @Test
     @DisplayName("新请求应创建记录并调用限流检查")
     void shouldCreateRecordAndCheckRateLimit() {
-        when(invocationMapper.selectByRequestId("req-new")).thenReturn(null);
-        when(rateLimitService.checkOrThrow(1L, "invocation:report"))
-                .thenReturn(new RateLimitStatusVO(100, 1, 0, false));
         ArgumentCaptor<InvocationEntity> captor = ArgumentCaptor.forClass(InvocationEntity.class);
 
         InvocationServiceImpl service = new InvocationServiceImpl(invocationMapper, rateLimitService, feedbackServiceProvider);
@@ -89,11 +88,11 @@ class InvocationServiceImplTest {
         request.setRiskLevel(1);
         request.setRequiredConfirmation(0);
         request.setConfirmationObtained(0);
-        // 注意：未设置 feedbackContent 和 evidenceRefs，故 feedbackService 不会被调用
 
         InvocationDetailVO result = service.reportInvocation(1L, request);
 
         assertNotNull(result);
+        verify(rateLimitService).checkOrThrow(1L, "invocation:report");
         verify(invocationMapper).insert(captor.capture());
         assertEquals("req-new", captor.getValue().getRequestId());
         assertEquals("worked", captor.getValue().getResultType());
@@ -101,9 +100,8 @@ class InvocationServiceImplTest {
     }
 
     @Test
-    @DisplayName("限流超限应抛出异常")
+    @DisplayName("限流超限应抛出异常，不执行 insert")
     void shouldThrowWhenRateLimited() {
-        when(invocationMapper.selectByRequestId("req-new")).thenReturn(null);
         when(rateLimitService.checkOrThrow(1L, "invocation:report"))
                 .thenThrow(new BizException(ErrorCode.RATE_LIMITED));
 

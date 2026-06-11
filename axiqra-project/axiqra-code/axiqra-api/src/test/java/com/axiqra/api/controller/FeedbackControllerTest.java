@@ -3,6 +3,8 @@ package com.axiqra.api.controller;
 import com.axiqra.common.domain.dto.FeedbackSubmitRequest;
 import com.axiqra.common.domain.vo.FeedbackDetailVO;
 import com.axiqra.common.domain.vo.SolutionFeedbackStatsVO;
+import com.axiqra.common.exception.BizException;
+import com.axiqra.common.exception.ErrorCode;
 import com.axiqra.core.service.FeedbackService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,22 +41,39 @@ class FeedbackControllerTest {
         request.setFeedbackType("worked");
         request.setFeedbackContent("很好用");
 
-        FeedbackDetailVO expected = new FeedbackDetailVO();
-        expected.setId(5L);
-        expected.setInvocationId(77L);
-        expected.setUserId(1L);
-        expected.setFeedbackType("worked");
-        expected.setFeedbackTypeDesc("方案有效");
-        expected.setStatus("accepted");
+        FeedbackDetailVO vo = new FeedbackDetailVO();
+        vo.setId(5L);
+        vo.setInvocationId(77L);
+        vo.setUserId(1L);
+        vo.setFeedbackType("worked");
+        vo.setFeedbackTypeDesc("方案有效");
+        vo.setStatus("accepted");
 
-        when(feedbackService.submitFeedback(1L, request)).thenReturn(expected);
+        when(feedbackService.submitFeedback(eq(1L), any(FeedbackSubmitRequest.class))).thenReturn(vo);
 
         var result = controller.submitFeedback(1L, request);
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
-        assertEquals(5L, result.getBody().getId());
-        verify(feedbackService).submitFeedback(1L, request);
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(5L, result.getBody().getData().getId());
+        verify(feedbackService).submitFeedback(eq(1L), any(FeedbackSubmitRequest.class));
+    }
+
+    @Test
+    @DisplayName("submitFeedback 校验失败应抛出约束异常")
+    void submitFeedbackWithInvalidRequest() {
+        FeedbackSubmitRequest request = new FeedbackSubmitRequest();
+        request.setInvocationId(null);
+        request.setFeedbackType(null);
+
+        doThrow(new BizException(ErrorCode.PARAM_INVALID))
+                .when(feedbackService).submitFeedback(eq(1L), any(FeedbackSubmitRequest.class));
+
+        org.junit.jupiter.api.Assertions.assertThrows(BizException.class, () -> {
+            controller.submitFeedback(1L, request);
+        });
     }
 
     @Test
@@ -68,23 +90,63 @@ class FeedbackControllerTest {
         var result = controller.listFeedbacks(1L, "solution", 77L);
 
         assertNotNull(result);
-        assertEquals(1, result.getBody().size());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(1, result.getBody().getData().size());
         verify(feedbackService).listFeedbacks(1L, "solution", 77L);
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/feedbacks 返回空列表")
+    void listFeedbacksShouldReturnEmptyList() {
+        when(feedbackService.listFeedbacks(1L, "solution", 77L))
+                .thenReturn(List.of());
+
+        var result = controller.listFeedbacks(1L, "solution", 77L);
+
+        assertNotNull(result);
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(0, result.getBody().getData().size());
     }
 
     @Test
     @DisplayName("GET /api/v1/feedbacks/solutions/{id}/stats 应返回统计")
     void getStatsShouldReturnStats() {
-        SolutionFeedbackStatsVO expected = new SolutionFeedbackStatsVO();
-        expected.setWorkedCount(10L);
-        expected.setTotalCount(15L);
+        SolutionFeedbackStatsVO stats = new SolutionFeedbackStatsVO();
+        stats.setWorkedCount(10L);
+        stats.setTotalCount(15L);
 
-        when(feedbackService.getSolutionFeedbackStats(77L)).thenReturn(expected);
+        when(feedbackService.getSolutionFeedbackStats(77L)).thenReturn(stats);
 
         var result = controller.getSolutionFeedbackStats(77L);
 
         assertNotNull(result);
-        assertEquals(10L, result.getBody().getWorkedCount());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(10L, result.getBody().getData().getWorkedCount());
         verify(feedbackService).getSolutionFeedbackStats(77L);
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/feedbacks/solutions/{id}/stats 返回全零统计")
+    void getStatsShouldHandleZeroCounts() {
+        SolutionFeedbackStatsVO stats = new SolutionFeedbackStatsVO();
+        stats.setWorkedCount(0L);
+        stats.setTotalCount(0L);
+
+        when(feedbackService.getSolutionFeedbackStats(99L)).thenReturn(stats);
+
+        var result = controller.getSolutionFeedbackStats(99L);
+
+        assertNotNull(result);
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(0L, result.getBody().getData().getWorkedCount());
+        assertEquals(0L, result.getBody().getData().getTotalCount());
     }
 }

@@ -49,7 +49,9 @@ class InvocationControllerTest {
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
-        assertEquals(10L, result.getBody().getId());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(10L, result.getBody().getData().getId());
         verify(invocationService).reportInvocation(1L, request);
     }
 
@@ -67,7 +69,9 @@ class InvocationControllerTest {
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
-        assertEquals(10L, result.getBody().getId());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(10L, result.getBody().getData().getId());
         verify(invocationService).isUserAuthorized(1L, 10L);
         verify(invocationService).getInvocationDetail(1L, 10L);
     }
@@ -81,6 +85,9 @@ class InvocationControllerTest {
 
         assertNotNull(result);
         assertEquals(403, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(403, result.getBody().getCode());
+        assertEquals("无权限查看该调用记录", result.getBody().getMessage());
     }
 
     @Test
@@ -96,8 +103,11 @@ class InvocationControllerTest {
         var result = controller.getSolutionFeedbackStats(77L);
 
         assertNotNull(result);
-        assertEquals(5L, result.getBody().getWorkedCount());
-        assertEquals(7L, result.getBody().getTotalCount());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(5L, result.getBody().getData().getWorkedCount());
+        assertEquals(7L, result.getBody().getData().getTotalCount());
         verify(invocationService).getSolutionFeedbackStats(77L);
     }
 }

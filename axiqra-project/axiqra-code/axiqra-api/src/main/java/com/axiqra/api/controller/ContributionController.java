@@ -2,6 +2,7 @@ package com.axiqra.api.controller;
 
 import com.axiqra.api.annotation.RequireScope;
 import com.axiqra.common.domain.vo.ContributionSummaryVO;
+import com.axiqra.common.response.ApiResponse;
 import com.axiqra.core.service.ContributionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,18 +33,18 @@ public class ContributionController {
     @Operation(summary = "获取贡献汇总")
     @GetMapping("/users/{userId}/summary")
     @RequireScope("contribution:read")
-    public ResponseEntity<ContributionSummaryVO> getContributionSummary(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<ContributionSummaryVO>> getContributionSummary(@PathVariable Long userId) {
         ContributionSummaryVO result = contributionService.getContributionSummary(userId);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @Operation(summary = "获取贡献记录")
     @GetMapping("/users/{userId}/records")
     @RequireScope("contribution:read")
-    public ResponseEntity<List<ContributionSummaryVO.ContributionRecord>> getContributionRecords(
+    public ResponseEntity<ApiResponse<List<ContributionSummaryVO.ContributionRecord>>> getContributionRecords(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "20") @Min(1) @Max(1000) int limit) {
         List<ContributionSummaryVO.ContributionRecord> result = contributionService.getContributionRecords(userId, limit);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 }

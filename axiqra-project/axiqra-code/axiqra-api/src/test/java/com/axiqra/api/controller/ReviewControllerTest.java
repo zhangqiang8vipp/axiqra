@@ -1,6 +1,7 @@
 package com.axiqra.api.controller;
 
 import com.axiqra.common.domain.vo.ReviewDetailVO;
+import com.axiqra.common.response.ApiResponse;
 import com.axiqra.core.service.ReviewService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,10 @@ class ReviewControllerTest {
         var result = controller.getPendingReviews(1L, "human", 20);
 
         assertNotNull(result);
-        assertEquals(1, result.getBody().size());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(1, result.getBody().getData().size());
         verify(reviewService).getPendingReviews(1L, "human", 20);
     }
 
@@ -71,7 +75,10 @@ class ReviewControllerTest {
         var result = controller.getReviewDetail(1L, 10L);
 
         assertNotNull(result);
-        assertEquals(10L, result.getBody().getId());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals(10L, result.getBody().getData().getId());
         verify(reviewService).getReviewDetail(1L, 10L);
     }
 
@@ -87,7 +94,10 @@ class ReviewControllerTest {
         var result = controller.approve(1L, 10L, "CODE_OK", "LGTM");
 
         assertNotNull(result);
-        assertEquals("approved", result.getBody().getStatus());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals("approved", result.getBody().getData().getStatus());
         verify(reviewService).approve(1L, 10L, "CODE_OK", "LGTM");
     }
 
@@ -103,7 +113,10 @@ class ReviewControllerTest {
         var result = controller.reject(1L, 10L, "RISK_HIGH", "");
 
         assertNotNull(result);
-        assertEquals("rejected", result.getBody().getStatus());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals("rejected", result.getBody().getData().getStatus());
         verify(reviewService).reject(1L, 10L, "RISK_HIGH", "");
     }
 
@@ -119,7 +132,10 @@ class ReviewControllerTest {
         var result = controller.quarantine(1L, 10L, "MALICIOUS", "");
 
         assertNotNull(result);
-        assertEquals("quarantined", result.getBody().getStatus());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals("quarantined", result.getBody().getData().getStatus());
         verify(reviewService).quarantine(1L, 10L, "MALICIOUS", "");
     }
 
@@ -135,7 +151,10 @@ class ReviewControllerTest {
         var result = controller.appeal(1L, 10L, "I disagree");
 
         assertNotNull(result);
-        assertEquals("appeal_in_progress", result.getBody().getStatus());
+        assertEquals(200, result.getStatusCode().value());
+        assertNotNull(result.getBody());
+        assertEquals(0, result.getBody().getCode());
+        assertEquals("appeal_in_progress", result.getBody().getData().getStatus());
         verify(reviewService).appeal(1L, 10L, "I disagree");
     }
 }
