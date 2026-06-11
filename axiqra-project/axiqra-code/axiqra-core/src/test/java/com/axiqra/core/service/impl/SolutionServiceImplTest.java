@@ -10,7 +10,6 @@ import com.axiqra.common.domain.enums.VisibilityScope;
 import com.axiqra.common.exception.BizException;
 import com.axiqra.common.exception.ErrorCode;
 import com.axiqra.core.mapper.FeedbackMapper;
-import com.axiqra.core.mapper.FeedbackStatRow;
 import com.axiqra.core.mapper.SolutionMapper;
 import com.axiqra.core.mapper.SolutionVersionMapper;
 import com.axiqra.core.service.RbacService;
@@ -150,10 +149,22 @@ class SolutionServiceImplTest {
         when(rbacService.isMember(1L, 100L)).thenReturn(true);
         when(solutionVersionMapper.selectBySolutionId(10L)).thenReturn(List.of(version));
         when(feedbackMapper.selectFeedbackStatsBySolutionId(10L)).thenReturn(List.of(
-                new FeedbackStatRow(FeedbackType.WORKED.getCode(), 2L),
-                new FeedbackStatRow(FeedbackType.FAILED.getCode(), 1L),
-                new FeedbackStatRow("unknown", 7L),
-                new FeedbackStatRow(FeedbackType.NOT_APPLICABLE.getCode(), null)
+                new FeedbackMapper.FeedbackStatRow() {
+                    @Override public String getFeedbackType() { return FeedbackType.WORKED.getCode(); }
+                    @Override public Long getCount() { return 2L; }
+                },
+                new FeedbackMapper.FeedbackStatRow() {
+                    @Override public String getFeedbackType() { return FeedbackType.FAILED.getCode(); }
+                    @Override public Long getCount() { return 1L; }
+                },
+                new FeedbackMapper.FeedbackStatRow() {
+                    @Override public String getFeedbackType() { return "unknown"; }
+                    @Override public Long getCount() { return 7L; }
+                },
+                new FeedbackMapper.FeedbackStatRow() {
+                    @Override public String getFeedbackType() { return FeedbackType.NOT_APPLICABLE.getCode(); }
+                    @Override public Long getCount() { return null; }
+                }
         ));
 
         var result = solutionService.getDetail(1L, 10L);
