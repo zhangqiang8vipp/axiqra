@@ -27,6 +27,9 @@ public class ContributionServiceImpl implements ContributionService {
 
     @Override
     public ContributionSummaryVO getContributionSummary(Long actorId) {
+        if (actorId == null || actorId <= 0) {
+            throw new IllegalArgumentException("actorId must be positive");
+        }
         Integer totalPoints = contributionLedgerMapper.sumPointsByActorId(actorId);
 
         // 按事件类型精确计数，不依赖记录条数上限

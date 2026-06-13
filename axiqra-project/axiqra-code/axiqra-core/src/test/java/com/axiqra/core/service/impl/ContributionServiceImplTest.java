@@ -115,6 +115,15 @@ class ContributionServiceImplTest {
     }
 
     @Test
+    @DisplayName("getContributionSummary actorId <= 0 应抛出 IllegalArgumentException")
+    void shouldThrowWhenActorIdNonPositive() {
+        assertThrows(IllegalArgumentException.class,
+                () -> contributionService.getContributionSummary(0L));
+        assertThrows(IllegalArgumentException.class,
+                () -> contributionService.getContributionSummary(-1L));
+    }
+
+    @Test
     @DisplayName("getContributionRecords limit <= 0 应抛出 IllegalArgumentException")
     void shouldThrowWhenLimitNonPositive() {
         assertThrows(IllegalArgumentException.class,
