@@ -153,12 +153,12 @@ class FeedbackServiceImplTest {
     @DisplayName("getSolutionFeedbackStats 应聚合各类型统计")
     void shouldAggregateFeedbackStats() {
         FeedbackMapper.FeedbackStatRow workedRow = mock(FeedbackMapper.FeedbackStatRow.class);
-        org.mockito.Mockito.doReturn("worked").when(workedRow).getFeedbackType();
-        org.mockito.Mockito.doReturn(3L).when(workedRow).getCount();
+        when(workedRow.getFeedbackType()).thenReturn("worked");
+        when(workedRow.getCount()).thenReturn(3L);
 
         FeedbackMapper.FeedbackStatRow failedRow = mock(FeedbackMapper.FeedbackStatRow.class);
-        org.mockito.Mockito.doReturn("failed").when(failedRow).getFeedbackType();
-        org.mockito.Mockito.doReturn(2L).when(failedRow).getCount();
+        when(failedRow.getFeedbackType()).thenReturn("failed");
+        when(failedRow.getCount()).thenReturn(2L);
 
         when(feedbackMapper.selectFeedbackStatsBySolutionId(77L))
                 .thenReturn(List.of(workedRow, failedRow));
@@ -173,8 +173,8 @@ class FeedbackServiceImplTest {
 
     private FeedbackMapper.FeedbackStatRow mockStatRow(String type, Long count) {
         FeedbackMapper.FeedbackStatRow row = mock(FeedbackMapper.FeedbackStatRow.class);
-        org.mockito.Mockito.doReturn(type).when(row).getFeedbackType();
-        org.mockito.Mockito.doReturn(count).when(row).getCount();
+        when(row.getFeedbackType()).thenReturn(type);
+        when(row.getCount()).thenReturn(count);
         return row;
     }
 

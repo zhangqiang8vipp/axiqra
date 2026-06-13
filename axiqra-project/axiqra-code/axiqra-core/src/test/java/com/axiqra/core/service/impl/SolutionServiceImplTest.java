@@ -151,20 +151,20 @@ class SolutionServiceImplTest {
         when(rbacService.isMember(1L, 100L)).thenReturn(true);
         when(solutionVersionMapper.selectBySolutionId(10L)).thenReturn(List.of(version));
         FeedbackMapper.FeedbackStatRow workedRow = mock(FeedbackMapper.FeedbackStatRow.class);
-        org.mockito.Mockito.doReturn(FeedbackType.WORKED.getCode()).when(workedRow).getFeedbackType();
-        org.mockito.Mockito.doReturn(2L).when(workedRow).getCount();
+        when(workedRow.getFeedbackType()).thenReturn(FeedbackType.WORKED.getCode());
+        when(workedRow.getCount()).thenReturn(2L);
 
         FeedbackMapper.FeedbackStatRow failedRow = mock(FeedbackMapper.FeedbackStatRow.class);
-        org.mockito.Mockito.doReturn(FeedbackType.FAILED.getCode()).when(failedRow).getFeedbackType();
-        org.mockito.Mockito.doReturn(1L).when(failedRow).getCount();
+        when(failedRow.getFeedbackType()).thenReturn(FeedbackType.FAILED.getCode());
+        when(failedRow.getCount()).thenReturn(1L);
 
         FeedbackMapper.FeedbackStatRow unknownRow = mock(FeedbackMapper.FeedbackStatRow.class);
-        lenient().doReturn("unknown").when(unknownRow).getFeedbackType();
-        lenient().doReturn(7L).when(unknownRow).getCount();
+        lenient().when(unknownRow.getFeedbackType()).thenReturn("unknown");
+        lenient().when(unknownRow.getCount()).thenReturn(7L);
 
         FeedbackMapper.FeedbackStatRow notApplicableRow = mock(FeedbackMapper.FeedbackStatRow.class);
-        org.mockito.Mockito.doReturn(FeedbackType.NOT_APPLICABLE.getCode()).when(notApplicableRow).getFeedbackType();
-        org.mockito.Mockito.doReturn(null).when(notApplicableRow).getCount();
+        when(notApplicableRow.getFeedbackType()).thenReturn(FeedbackType.NOT_APPLICABLE.getCode());
+        when(notApplicableRow.getCount()).thenReturn(null);
 
         when(feedbackMapper.selectFeedbackStatsBySolutionId(10L)).thenReturn(List.of(
                 workedRow, failedRow, unknownRow, notApplicableRow));

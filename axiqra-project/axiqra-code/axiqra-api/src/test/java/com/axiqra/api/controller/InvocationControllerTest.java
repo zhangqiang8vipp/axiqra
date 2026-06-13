@@ -3,6 +3,7 @@ package com.axiqra.api.controller;
 import com.axiqra.common.domain.dto.InvocationReportRequest;
 import com.axiqra.common.domain.vo.InvocationDetailVO;
 import com.axiqra.common.domain.vo.SolutionFeedbackStatsVO;
+import com.axiqra.common.exception.BizException;
 import com.axiqra.core.service.InvocationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mockStatic;
@@ -94,17 +96,14 @@ class InvocationControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/invocations/{id} 未授权时应返回 403")
-    void getDetailShouldReturn403WhenUnauthorized() {
+    @DisplayName("GET /api/v1/invocations/{id} 未授权时应抛出 BizException")
+    void getDetailShouldThrowBizExceptionWhenUnauthorized() {
         when(invocationService.isUserAuthorized(1L, 10L)).thenReturn(false);
 
-        var result = controller.getInvocationDetail(10L);
+        BizException ex = assertThrows(BizException.class,
+                () -> controller.getInvocationDetail(10L));
 
-        assertNotNull(result);
-        assertEquals(403, result.getStatusCode().value());
-        assertNotNull(result.getBody());
-        assertEquals(403, result.getBody().getCode());
-        assertEquals("无权限查看该调用记录", result.getBody().getMessage());
+        assertEquals("无权限查看该调用记录", ex.getMessage());
     }
 
     @Test
