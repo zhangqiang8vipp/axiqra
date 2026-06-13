@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class ReviewController {
     @GetMapping("/pending")
     @RequireScope("review:read")
     public ResponseEntity<ApiResponse<List<ReviewDetailVO>>> getPendingReviews(
-            @RequestParam(defaultValue = "human") String queue,
+            @RequestParam(defaultValue = "human") @Pattern(regexp = "^(HUMAN|AUTO|QUARANTINED)$", message = "queue 只能是 HUMAN|AUTO|QUARANTINED") @Size(max = 32) String queue,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit) {
         long userId = StpUtil.getLoginIdAsLong();
         List<ReviewDetailVO> result = reviewService.getPendingReviews(userId, queue, limit);

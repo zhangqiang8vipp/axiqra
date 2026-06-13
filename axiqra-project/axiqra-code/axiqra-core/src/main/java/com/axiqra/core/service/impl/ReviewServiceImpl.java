@@ -76,7 +76,6 @@ public class ReviewServiceImpl implements ReviewService {
 
         entity.setStatus(ReviewResult.APPEAL_IN_PROGRESS);
         entity.setAppealContent(appealContent);
-        entity.setVersion(entity.getVersion() + 1);
         int rows = reviewMapper.update(entity);
         if (rows == 0) {
             throw new BizException(ErrorCode.STATUS_TRANSITION_INVALID, "乐观锁冲突，申诉状态已变更");
