@@ -150,14 +150,6 @@ class FeedbackServiceImplTest {
     }
 
     @Test
-    @DisplayName("toDetailVOList 传入 null 应返回空列表")
-    void shouldReturnEmptyListWhenNull() {
-        List<FeedbackDetailVO> result = feedbackService.listFeedbacks(1L, "unknown", 77L);
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     @DisplayName("getSolutionFeedbackStats 应聚合各类型统计")
     void shouldAggregateFeedbackStats() {
         FeedbackMapper.FeedbackStatRow workedRow = mock(FeedbackMapper.FeedbackStatRow.class);

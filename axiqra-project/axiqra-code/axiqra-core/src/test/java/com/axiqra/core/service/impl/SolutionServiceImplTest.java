@@ -145,7 +145,7 @@ class SolutionServiceImplTest {
         version.setSolutionId(10L);
         version.setVersionNumber(3);
         version.setSteps("step-1");
-        version.setIsActive(1);
+        version.setActive(true);
 
         when(solutionMapper.selectActiveById(10L)).thenReturn(solution);
         when(rbacService.isMember(1L, 100L)).thenReturn(true);

@@ -53,7 +53,7 @@ class ReviewControllerTest {
 
         when(reviewService.getPendingReviews(1L, "human", 20)).thenReturn(List.of(vo));
 
-        var result = controller.getPendingReviews(1L, "human", 20);
+        var result = controller.getPendingReviews("human", 20);
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -72,7 +72,7 @@ class ReviewControllerTest {
 
         when(reviewService.getReviewDetail(1L, 10L)).thenReturn(expected);
 
-        var result = controller.getReviewDetail(1L, 10L);
+        var result = controller.getReviewDetail(10L);
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -91,7 +91,7 @@ class ReviewControllerTest {
 
         when(reviewService.approve(1L, 10L, "CODE_OK", "LGTM")).thenReturn(expected);
 
-        var result = controller.approve(1L, 10L, "CODE_OK", "LGTM");
+        var result = controller.approve(10L, "CODE_OK", "LGTM");
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -110,7 +110,7 @@ class ReviewControllerTest {
 
         when(reviewService.reject(1L, 10L, "RISK_HIGH", "")).thenReturn(expected);
 
-        var result = controller.reject(1L, 10L, "RISK_HIGH", "");
+        var result = controller.reject(10L, "RISK_HIGH", "");
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -129,7 +129,7 @@ class ReviewControllerTest {
 
         when(reviewService.quarantine(1L, 10L, "MALICIOUS", "")).thenReturn(expected);
 
-        var result = controller.quarantine(1L, 10L, "MALICIOUS", "");
+        var result = controller.quarantine(10L, "MALICIOUS", "");
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -148,7 +148,7 @@ class ReviewControllerTest {
 
         when(reviewService.appeal(1L, 10L, "I disagree")).thenReturn(expected);
 
-        var result = controller.appeal(1L, 10L, "I disagree");
+        var result = controller.appeal(10L, "I disagree");
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());

@@ -4,17 +4,21 @@ import com.axiqra.common.domain.dto.InvocationReportRequest;
 import com.axiqra.common.domain.vo.InvocationDetailVO;
 import com.axiqra.common.domain.vo.SolutionFeedbackStatsVO;
 import com.axiqra.core.service.InvocationService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("InvocationController 接口测试")
@@ -25,6 +29,19 @@ class InvocationControllerTest {
 
     @InjectMocks
     private InvocationController controller;
+
+    private MockedStatic<cn.dev33.satoken.stp.StpUtil> stpUtilMock;
+
+    @BeforeEach
+    void setUp() {
+        stpUtilMock = mockStatic(cn.dev33.satoken.stp.StpUtil.class);
+        stpUtilMock.when(cn.dev33.satoken.stp.StpUtil::getLoginIdAsLong).thenReturn(1L);
+    }
+
+    @AfterEach
+    void tearDown() {
+        stpUtilMock.close();
+    }
 
     @Test
     @DisplayName("POST /api/v1/invocations 应调用 service.reportInvocation")
@@ -45,7 +62,7 @@ class InvocationControllerTest {
 
         when(invocationService.reportInvocation(1L, request)).thenReturn(expected);
 
-        var result = controller.reportInvocation(1L, request);
+        var result = controller.reportInvocation(request);
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -65,7 +82,7 @@ class InvocationControllerTest {
         when(invocationService.isUserAuthorized(1L, 10L)).thenReturn(true);
         when(invocationService.getInvocationDetail(1L, 10L)).thenReturn(expected);
 
-        var result = controller.getInvocationDetail(1L, 10L);
+        var result = controller.getInvocationDetail(10L);
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -81,7 +98,7 @@ class InvocationControllerTest {
     void getDetailShouldReturn403WhenUnauthorized() {
         when(invocationService.isUserAuthorized(1L, 10L)).thenReturn(false);
 
-        var result = controller.getInvocationDetail(1L, 10L);
+        var result = controller.getInvocationDetail(10L);
 
         assertNotNull(result);
         assertEquals(403, result.getStatusCode().value());

@@ -1,5 +1,6 @@
 package com.axiqra.api.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.axiqra.api.annotation.RequireScope;
 import com.axiqra.common.domain.dto.InvocationReportRequest;
 import com.axiqra.common.domain.vo.InvocationDetailVO;
@@ -35,8 +36,8 @@ public class InvocationController {
     @PostMapping
     @RequireScope("connect:write")
     public ResponseEntity<ApiResponse<InvocationDetailVO>> reportInvocation(
-            @RequestHeader("X-User-Id") Long userId,
             @Valid @RequestBody InvocationReportRequest request) {
+        long userId = StpUtil.getLoginIdAsLong();
         InvocationDetailVO result = invocationService.reportInvocation(userId, request);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
@@ -45,8 +46,8 @@ public class InvocationController {
     @GetMapping("/{invocationId}")
     @RequireScope("connect:read")
     public ResponseEntity<ApiResponse<InvocationDetailVO>> getInvocationDetail(
-            @RequestHeader("X-User-Id") Long userId,
             @PathVariable @Positive Long invocationId) {
+        long userId = StpUtil.getLoginIdAsLong();
         if (!invocationService.isUserAuthorized(userId, invocationId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.fail(403, "无权限查看该调用记录"));
         }

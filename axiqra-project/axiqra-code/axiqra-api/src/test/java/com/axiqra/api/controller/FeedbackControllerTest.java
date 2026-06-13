@@ -6,11 +6,14 @@ import com.axiqra.common.domain.vo.SolutionFeedbackStatsVO;
 import com.axiqra.common.exception.BizException;
 import com.axiqra.common.exception.ErrorCode;
 import com.axiqra.core.service.FeedbackService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -23,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("FeedbackController 接口测试")
@@ -33,6 +37,19 @@ class FeedbackControllerTest {
 
     @InjectMocks
     private FeedbackController controller;
+
+    private MockedStatic<cn.dev33.satoken.stp.StpUtil> stpUtilMock;
+
+    @BeforeEach
+    void setUp() {
+        stpUtilMock = mockStatic(cn.dev33.satoken.stp.StpUtil.class);
+        stpUtilMock.when(cn.dev33.satoken.stp.StpUtil::getLoginIdAsLong).thenReturn(1L);
+    }
+
+    @AfterEach
+    void tearDown() {
+        stpUtilMock.close();
+    }
 
     @Test
     @DisplayName("POST /api/v1/feedbacks 应调用 service.submitFeedback")
@@ -52,7 +69,7 @@ class FeedbackControllerTest {
 
         when(feedbackService.submitFeedback(eq(1L), any(FeedbackSubmitRequest.class))).thenReturn(vo);
 
-        var result = controller.submitFeedback(1L, request);
+        var result = controller.submitFeedback(request);
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -73,7 +90,7 @@ class FeedbackControllerTest {
                 .when(feedbackService).submitFeedback(eq(1L), any(FeedbackSubmitRequest.class));
 
         assertThrows(BizException.class, () -> {
-            controller.submitFeedback(1L, request);
+            controller.submitFeedback(request);
         });
     }
 
@@ -88,7 +105,7 @@ class FeedbackControllerTest {
         when(feedbackService.listFeedbacks(1L, "solution", 77L))
                 .thenReturn(List.of(vo));
 
-        var result = controller.listFeedbacks(1L, "solution", 77L);
+        var result = controller.listFeedbacks("solution", 77L);
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());
@@ -104,7 +121,7 @@ class FeedbackControllerTest {
         when(feedbackService.listFeedbacks(1L, "solution", 77L))
                 .thenReturn(List.of());
 
-        var result = controller.listFeedbacks(1L, "solution", 77L);
+        var result = controller.listFeedbacks("solution", 77L);
 
         assertNotNull(result);
         assertEquals(200, result.getStatusCode().value());

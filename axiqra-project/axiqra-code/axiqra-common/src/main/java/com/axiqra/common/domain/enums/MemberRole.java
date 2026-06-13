@@ -29,7 +29,7 @@ public enum MemberRole {
     public static MemberRole of(String code) {
         if (code == null) return null;
         for (MemberRole r : values()) {
-            if (r.code.equals(code)) return r;
+            if (r.code.equals(code.toLowerCase())) return r;
         }
         return null;
     }

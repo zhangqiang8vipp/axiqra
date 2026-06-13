@@ -63,22 +63,29 @@ public class InvocationServiceImpl implements InvocationService {
         } catch (DataIntegrityViolationException ex) {
             log.info("Invocation 已存在，幂等返回: requestId={}", request.getRequestId());
             InvocationEntity existing = invocationMapper.selectByRequestId(request.getRequestId());
-            return toDetailVO(existing);
+            if (existing != null) {
+                return toDetailVO(existing);
+            }
+            log.error("Invocation 插入失败但查询不到记录: requestId={}", request.getRequestId());
+            throw new IllegalStateException("Invocation 幂等处理异常：无法找到已存在的记录 requestId=" + request.getRequestId());
         }
 
         if (request.getFeedbackContent() != null || (request.getEvidenceRefs() != null && !request.getEvidenceRefs().isEmpty())) {
-            FeedbackService feedbackService = feedbackServiceProvider.getIfAvailable();
-            if (feedbackService != null) {
-                FeedbackSubmitRequest feedbackRequest = new FeedbackSubmitRequest();
-                feedbackRequest.setInvocationId(entity.getId());
-                feedbackRequest.setFeedbackType(request.getResultType());
-                feedbackRequest.setFeedbackContent(request.getFeedbackContent());
-                feedbackRequest.setEvidenceRefs(request.getEvidenceRefs());
-                feedbackRequest.setContextDelta(request.getContextDelta());
-                feedbackRequest.setBoundaryNotes(request.getBoundaryNotes());
-                feedbackService.submitFeedback(userId, feedbackRequest);
-            } else {
-                log.warn("FeedbackService 未就绪，跳过联动反馈: invocationId={}", entity.getId());
+            try {
+                FeedbackService feedbackService = feedbackServiceProvider.getIfAvailable();
+                if (feedbackService != null) {
+                    FeedbackSubmitRequest feedbackRequest = new FeedbackSubmitRequest();
+                    feedbackRequest.setInvocationId(entity.getId());
+                    feedbackRequest.setFeedbackType(request.getResultType());
+                    feedbackRequest.setFeedbackContent(request.getFeedbackContent());
+                    feedbackRequest.setEvidenceRefs(request.getEvidenceRefs());
+                    feedbackRequest.setContextDelta(request.getContextDelta());
+                    feedbackRequest.setBoundaryNotes(request.getBoundaryNotes());
+                    feedbackService.submitFeedback(userId, feedbackRequest);
+                }
+            } catch (Exception feedbackEx) {
+                log.warn("Feedback 联动失败，不阻断 Invocation 上报: invocationId={}, error={}",
+                        entity.getId(), feedbackEx.getMessage());
             }
         }
 

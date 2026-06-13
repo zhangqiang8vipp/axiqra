@@ -148,7 +148,7 @@ public class SolutionServiceImpl implements SolutionService {
                 .evidence(entity.getEvidence())
                 .risk(entity.getRisk())
                 .rollback(entity.getRollback())
-                .active(entity.getIsActive() != null && entity.getIsActive() == 1)
+                .active(entity.isActive())
                 .build();
     }
 

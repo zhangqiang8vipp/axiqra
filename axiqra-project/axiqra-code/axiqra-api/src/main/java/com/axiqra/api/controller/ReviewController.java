@@ -1,5 +1,6 @@
 package com.axiqra.api.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.axiqra.api.annotation.RequireScope;
 import com.axiqra.common.domain.vo.ReviewDetailVO;
 import com.axiqra.common.response.ApiResponse;
@@ -37,9 +38,9 @@ public class ReviewController {
     @GetMapping("/pending")
     @RequireScope("review:read")
     public ResponseEntity<ApiResponse<List<ReviewDetailVO>>> getPendingReviews(
-            @RequestHeader("X-User-Id") Long userId,
             @RequestParam(defaultValue = "human") String queue,
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit) {
+        long userId = StpUtil.getLoginIdAsLong();
         List<ReviewDetailVO> result = reviewService.getPendingReviews(userId, queue, limit);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
@@ -48,8 +49,8 @@ public class ReviewController {
     @GetMapping("/{reviewId}")
     @RequireScope("review:read")
     public ResponseEntity<ApiResponse<ReviewDetailVO>> getReviewDetail(
-            @RequestHeader("X-User-Id") Long userId,
             @PathVariable @Positive Long reviewId) {
+        long userId = StpUtil.getLoginIdAsLong();
         ReviewDetailVO result = reviewService.getReviewDetail(userId, reviewId);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
@@ -58,10 +59,10 @@ public class ReviewController {
     @PostMapping("/{reviewId}/approve")
     @RequireScope("review:write")
     public ResponseEntity<ApiResponse<ReviewDetailVO>> approve(
-            @RequestHeader("X-User-Id") Long userId,
             @PathVariable @Positive Long reviewId,
             @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
             @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
+        long userId = StpUtil.getLoginIdAsLong();
         ReviewDetailVO result = reviewService.approve(userId, reviewId, reasonCode, notes);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
@@ -70,10 +71,10 @@ public class ReviewController {
     @PostMapping("/{reviewId}/reject")
     @RequireScope("review:write")
     public ResponseEntity<ApiResponse<ReviewDetailVO>> reject(
-            @RequestHeader("X-User-Id") Long userId,
             @PathVariable @Positive Long reviewId,
             @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
             @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
+        long userId = StpUtil.getLoginIdAsLong();
         ReviewDetailVO result = reviewService.reject(userId, reviewId, reasonCode, notes);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
@@ -82,10 +83,10 @@ public class ReviewController {
     @PostMapping("/{reviewId}/quarantine")
     @RequireScope("review:write")
     public ResponseEntity<ApiResponse<ReviewDetailVO>> quarantine(
-            @RequestHeader("X-User-Id") Long userId,
             @PathVariable @Positive Long reviewId,
             @RequestParam(required = false) @Size(max = 64, message = "reasonCode 长度不能超过 64") String reasonCode,
             @RequestParam(required = false) @Size(max = 1000, message = "notes 长度不能超过 1000") String notes) {
+        long userId = StpUtil.getLoginIdAsLong();
         ReviewDetailVO result = reviewService.quarantine(userId, reviewId, reasonCode, notes);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
@@ -94,9 +95,9 @@ public class ReviewController {
     @PostMapping("/{reviewId}/appeal")
     @RequireScope("review:write")
     public ResponseEntity<ApiResponse<ReviewDetailVO>> appeal(
-            @RequestHeader("X-User-Id") Long userId,
             @PathVariable @Positive Long reviewId,
             @RequestParam @NotBlank(message = "申诉内容不能为空") @Size(max = 2000, message = "appealContent 长度不能超过 2000") String appealContent) {
+        long userId = StpUtil.getLoginIdAsLong();
         ReviewDetailVO result = reviewService.appeal(userId, reviewId, appealContent);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }

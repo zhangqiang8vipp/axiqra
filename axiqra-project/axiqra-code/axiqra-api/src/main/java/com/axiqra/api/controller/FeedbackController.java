@@ -1,5 +1,6 @@
 package com.axiqra.api.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.axiqra.api.annotation.RequireScope;
 import com.axiqra.common.domain.dto.FeedbackSubmitRequest;
 import com.axiqra.common.domain.vo.FeedbackDetailVO;
@@ -33,8 +34,8 @@ public class FeedbackController {
     @PostMapping
     @RequireScope("feedback:write")
     public ResponseEntity<ApiResponse<FeedbackDetailVO>> submitFeedback(
-            @RequestHeader("X-User-Id") Long userId,
             @Valid @RequestBody FeedbackSubmitRequest request) {
+        long userId = StpUtil.getLoginIdAsLong();
         FeedbackDetailVO result = feedbackService.submitFeedback(userId, request);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
@@ -43,9 +44,9 @@ public class FeedbackController {
     @GetMapping
     @RequireScope("feedback:read")
     public ResponseEntity<ApiResponse<List<FeedbackDetailVO>>> listFeedbacks(
-            @RequestHeader("X-User-Id") Long userId,
             @RequestParam String targetType,
             @RequestParam Long targetId) {
+        long userId = StpUtil.getLoginIdAsLong();
         List<FeedbackDetailVO> result = feedbackService.listFeedbacks(userId, targetType, targetId);
         return ResponseEntity.ok(ApiResponse.ok(result));
     }

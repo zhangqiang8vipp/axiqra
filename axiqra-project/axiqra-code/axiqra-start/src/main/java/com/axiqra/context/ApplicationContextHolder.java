@@ -16,6 +16,9 @@ public class ApplicationContextHolder {
     private static volatile ApplicationContext context;
 
     public static void setApplicationContext(ApplicationContext ctx) {
+        if (ctx == null) {
+            throw new IllegalArgumentException("ApplicationContext must not be null");
+        }
         if (context != null) {
             throw new IllegalStateException("ApplicationContext 已经初始化，不能重复设置");
         }
