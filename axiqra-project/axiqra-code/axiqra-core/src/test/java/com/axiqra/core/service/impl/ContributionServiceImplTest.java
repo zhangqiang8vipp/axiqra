@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -111,6 +112,13 @@ class ContributionServiceImplTest {
         assertEquals(1, result.getSolutionCount());
         assertEquals(3, result.getCaseCount());
         assertEquals(130, result.getTotalPoints());
+    }
+
+    @Test
+    @DisplayName("getContributionRecords limit <= 0 应抛出 IllegalArgumentException")
+    void shouldThrowWhenLimitNonPositive() {
+        assertThrows(IllegalArgumentException.class,
+                () -> contributionService.getContributionRecords(1L, 0));
     }
 
     private ContributionLedgerEntity ledgerEntity(Long id, String eventType, int points) {

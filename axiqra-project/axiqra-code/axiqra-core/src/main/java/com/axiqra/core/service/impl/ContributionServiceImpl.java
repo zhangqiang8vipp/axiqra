@@ -49,6 +49,9 @@ public class ContributionServiceImpl implements ContributionService {
 
     @Override
     public List<ContributionSummaryVO.ContributionRecord> getContributionRecords(Long actorId, int limit) {
+        if (limit <= 0) {
+            throw new IllegalArgumentException("limit must be positive");
+        }
         List<ContributionLedgerEntity> records = contributionLedgerMapper.selectByActorId(actorId, limit);
         return toRecordList(records);
     }

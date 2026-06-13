@@ -12,6 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,7 +47,7 @@ class ToolModelServiceImplTest {
     void shouldReturnLeaderboard() {
         ToolModelLeaderboardSnapshotEntity entity = leaderboardEntity("cursor", "gpt-4o",
                 new BigDecimal("95.5"), new BigDecimal("95.0"), 1000, 1);
-        when(leaderboardMapper.selectLeaderboard(LocalDate.now(), "public", null, 50))
+        when(leaderboardMapper.selectLeaderboard(any(LocalDate.class), eq("public"), eq(null), eq(50)))
                 .thenReturn(List.of(entity));
 
         List<ToolModelLeaderboardVO> result = toolModelService.getLeaderboard("public", null, null, 50);
@@ -60,7 +64,7 @@ class ToolModelServiceImplTest {
     void shouldPassLimitWhenToolNameProvided() {
         ToolModelLeaderboardSnapshotEntity entity = leaderboardEntity("cursor", "gpt-4o",
                 new BigDecimal("95.5"), new BigDecimal("95.0"), 1000, 1);
-        when(leaderboardMapper.selectByToolName(LocalDate.now(), "public", null, "cursor", 50))
+        when(leaderboardMapper.selectByToolName(any(LocalDate.class), eq("public"), eq(null), eq("cursor"), eq(50)))
                 .thenReturn(List.of(entity));
 
         List<ToolModelLeaderboardVO> result =
@@ -72,21 +76,20 @@ class ToolModelServiceImplTest {
     }
 
     @Test
-    @DisplayName("backfillAttribution 已存在时应跳过")
-    void shouldSkipWhenAttributionExists() {
-        ToolModelAttributionEntity existing = new ToolModelAttributionEntity();
-        existing.setRequestId("req-1");
-        when(attributionMapper.selectByRequestId("req-1")).thenReturn(existing);
+    @DisplayName("backfillAttribution 并发重复时应吞掉 DataIntegrityViolationException")
+    void shouldIgnoreDuplicateKeyViolation() {
+        doThrow(new DataIntegrityViolationException("duplicate key"))
+                .when(attributionMapper).insert(any(ToolModelAttributionEntity.class));
 
+        // 不应抛异常
         toolModelService.backfillAttribution(77L, "req-1", "cursor", "openai", "gpt-4o", "v1", "0.9");
 
-        verify(attributionMapper, never()).insert(any());
+        verify(attributionMapper).insert(any(ToolModelAttributionEntity.class));
     }
 
     @Test
-    @DisplayName("backfillAttribution 不存在时应创建记录")
+    @DisplayName("backfillAttribution 正常时应创建记录")
     void shouldCreateAttributionOnBackfill() {
-        when(attributionMapper.selectByRequestId("req-new")).thenReturn(null);
         ArgumentCaptor<ToolModelAttributionEntity> captor =
                 ArgumentCaptor.forClass(ToolModelAttributionEntity.class);
 
@@ -106,7 +109,7 @@ class ToolModelServiceImplTest {
     @Test
     @DisplayName("getLeaderboard 空结果应返回空列表")
     void shouldReturnEmptyLeaderboard() {
-        when(leaderboardMapper.selectLeaderboard(LocalDate.now(), "public", null, 50))
+        when(leaderboardMapper.selectLeaderboard(any(LocalDate.class), eq("public"), eq(null), eq(50)))
                 .thenReturn(List.of());
 
         List<ToolModelLeaderboardVO> result =

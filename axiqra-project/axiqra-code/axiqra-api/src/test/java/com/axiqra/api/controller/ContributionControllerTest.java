@@ -84,4 +84,29 @@ class ContributionControllerTest {
         assertEquals(0, result.getBody().getCode());
         assertEquals(0, result.getBody().getData().size());
     }
+
+    @Test
+    @DisplayName("getContributionRecords limit=1 应成功调用 service")
+    void getRecordsShouldSucceedWithLimitOne() {
+        when(contributionService.getContributionRecords(1L, 1)).thenReturn(List.of());
+
+        var result = controller.getContributionRecords(1L, 1);
+
+        assertNotNull(result);
+        assertEquals(200, result.getStatusCode().value());
+        verify(contributionService).getContributionRecords(1L, 1);
+    }
+
+    @Test
+    @DisplayName("getContributionRecords limit=1000 应成功调用 service")
+    void getRecordsShouldSucceedWithLimitThousand() {
+        when(contributionService.getContributionRecords(1L, 1000)).thenReturn(List.of());
+
+        var result = controller.getContributionRecords(1L, 1000);
+
+        assertNotNull(result);
+        assertEquals(200, result.getStatusCode().value());
+        verify(contributionService).getContributionRecords(1L, 1000);
+    }
+
 }

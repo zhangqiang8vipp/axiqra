@@ -1,0 +1,12 @@
+fix(R7): resolve CodeRabbit review comments round 2
+
+- ContributionControllerTest: add limit boundary tests (limit=1, limit=1000)
+- ToolModelControllerTest: add limit boundary tests (limit=1, limit=500)
+- ContributionServiceImpl: add limit > 0 guard with IllegalArgumentException
+- ContributionServiceImplTest: add test for non-positive limit rejection
+- ToolModelServiceImpl: isEmpty -> isBlank for all backfill params
+- ToolModelServiceImpl: replace check-then-insert with try-catch
+  DataIntegrityViolationException for idempotency
+- ToolModelServiceImplTest: fix LocalDate.now flaky stubs with any(LocalDate.class)
+- ToolModelServiceImplTest: update backfill tests for try-catch pattern
+- ReviewServiceImpl: remove manual version bump, rely on MyBatis-Flex optimistic lock

@@ -87,4 +87,31 @@ class ToolModelControllerTest {
         assertEquals(0, result.getBody().getCode());
         assertEquals(0, result.getBody().getData().size());
     }
+
+    @Test
+    @DisplayName("getLeaderboard limit=1 应成功调用 service")
+    void getLeaderboardShouldSucceedWithLimitOne() {
+        when(toolModelService.getLeaderboard("scope", null, null, 1))
+                .thenReturn(List.of());
+
+        var result = controller.getLeaderboard("scope", null, null, 1);
+
+        assertNotNull(result);
+        assertEquals(200, result.getStatusCode().value());
+        verify(toolModelService).getLeaderboard("scope", null, null, 1);
+    }
+
+    @Test
+    @DisplayName("getLeaderboard limit=500 应成功调用 service")
+    void getLeaderboardShouldSucceedWithLimitFiveHundred() {
+        when(toolModelService.getLeaderboard("scope", null, null, 500))
+                .thenReturn(List.of());
+
+        var result = controller.getLeaderboard("scope", null, null, 500);
+
+        assertNotNull(result);
+        assertEquals(200, result.getStatusCode().value());
+        verify(toolModelService).getLeaderboard("scope", null, null, 500);
+    }
+
 }

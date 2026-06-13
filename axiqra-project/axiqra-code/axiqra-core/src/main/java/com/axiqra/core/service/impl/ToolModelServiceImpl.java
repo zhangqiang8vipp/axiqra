@@ -8,6 +8,7 @@ import com.axiqra.core.mapper.ToolModelLeaderboardMapper;
 import com.axiqra.core.service.ToolModelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,37 +48,35 @@ public class ToolModelServiceImpl implements ToolModelService {
     @Transactional
     public void backfillAttribution(Long solutionId, String requestId, String toolName, String modelProvider,
                                     String modelName, String modelVersion, String confidence) {
-        if (solutionId == null || requestId == null || requestId.isEmpty()
-                || toolName == null || toolName.isEmpty()
-                || modelProvider == null || modelProvider.isEmpty()
-                || modelName == null || modelName.isEmpty()) {
+        if (solutionId == null || requestId == null || requestId.isBlank()
+                || toolName == null || toolName.isBlank()
+                || modelProvider == null || modelProvider.isBlank()
+                || modelName == null || modelName.isBlank()) {
             log.warn("归因回填参数不完整，跳过: solutionId={}, requestId={}, toolName={}, modelProvider={}, modelName={}",
                     solutionId, requestId, toolName, modelProvider, modelName);
             return;
         }
 
-        ToolModelAttributionEntity existing = attributionMapper.selectByRequestId(requestId);
-        if (existing != null) {
-            log.info("Attribution 已存在，跳过: requestId={}", requestId);
-            return;
+        try {
+            ToolModelAttributionEntity entity = new ToolModelAttributionEntity();
+            entity.setSolutionId(solutionId);
+            entity.setRequestId(requestId);
+            entity.setToolName(toolName);
+            entity.setReportedModelProvider(modelProvider);
+            entity.setReportedModelName(modelName);
+            entity.setReportedModelVersion(modelVersion);
+            entity.setReportedModelConfidence(confidence);
+            entity.setAttributionSource("backfill");
+            entity.setToolType("unknown");
+            entity.setToolVersion("unknown");
+            entity.setClientChannel("unknown");
+            entity.setReportedModelSource("unknown");
+
+            attributionMapper.insert(entity);
+            log.info("归因回填成功: solutionId={}, toolName={}, modelName={}", solutionId, toolName, modelName);
+        } catch (DataIntegrityViolationException ex) {
+            log.info("Attribution 已存在（并发），跳过: requestId={}", requestId);
         }
-
-        ToolModelAttributionEntity entity = new ToolModelAttributionEntity();
-        entity.setSolutionId(solutionId);
-        entity.setRequestId(requestId);
-        entity.setToolName(toolName);
-        entity.setReportedModelProvider(modelProvider);
-        entity.setReportedModelName(modelName);
-        entity.setReportedModelVersion(modelVersion);
-        entity.setReportedModelConfidence(confidence);
-        entity.setAttributionSource("backfill");
-        entity.setToolType("unknown");
-        entity.setToolVersion("unknown");
-        entity.setClientChannel("unknown");
-        entity.setReportedModelSource("unknown");
-
-        attributionMapper.insert(entity);
-        log.info("归因回填成功: solutionId={}, toolName={}, modelName={}", solutionId, toolName, modelName);
     }
 
     private List<ToolModelLeaderboardVO> toVOList(List<ToolModelLeaderboardSnapshotEntity> entities) {
